@@ -1,0 +1,1808 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #93 slice 10: 2026 Form 1 for a full-year Wisconsin resident with W-2 wages only.
+      Spec: https://github.com/jz4396/direct-file/issues/93#issuecomment-7194838302
+      Line 8 is the standard deduction table. A row is at least lo but less than hi. The amount is
+      the formula at the band midpoint, rounded once, half up. Single: max(0, min(13560,
+      13560 - 12% x (mid - 19550))). Married filing jointly: max(0, min(25110,
+      25110 - 19.778% x (mid - 28210))). Income of $155,169 or more is $0.
+      Line 11 under $100,000 uses the tax table at the row midpoint. Line 11 of $100,000 or more
+      uses the page 44 worksheet, rounded once. Dollar times Rational scales to cents half-even
+      before Round half-up. The rounded line subtracts $1 when that result exceeds the exact
+      product by more than 50 cents. An exact half dollar still rounds up.
+      Line 18 is 3% of the lower spouse's wages, capped at $16,000 of wages, so the credit is
+      at most $480. Single filers get no credit.
+      Line 1 is federal AGI. Lines 2, 4, and 6 are zero, so lines 3, 5, and 7 equal line 1.
+      Line 10a is $700 times 1 (single) or 2 (joint). Line 10b is zero. Line 22 is line 12 minus
+      line 21. Line 27 equals line 22. Line 28 is Wisconsin withholding. Refund or amount owed is
+      line 39 compared with line 27.
+      The 2025 Form 1 is the interim template. It is already fillable. Amounts entered are tax year
+      2026. The preprinted year still says 2025. A stop below is BlockSubmissionOnTrue and
+      print-refusing. Wisconsin is already a marital-property state.
+    -->
+
+    <Fact path="/wiStdSingleMax">
+      <Name>Wisconsin single standard deduction maximum</Name>
+      <Description>Maximum single standard deduction. 2025 Form 1 instructions, Standard Deduction Table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>13560</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdMfjMax">
+      <Name>Wisconsin married filing jointly standard deduction maximum</Name>
+      <Description>Maximum married filing jointly standard deduction. 2025 Form 1 instructions, Standard Deduction Table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>25110</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdSinglePhaseStart">
+      <Name>Wisconsin single standard deduction phaseout start</Name>
+      <Description>Single standard deduction phaseout starts when the band midpoint passes this amount. The amount reproduces the table. It is not printed as its own line.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>19550</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdMfjPhaseStart">
+      <Name>Wisconsin married filing jointly standard deduction phaseout start</Name>
+      <Description>Married filing jointly standard deduction phaseout starts when the band midpoint passes this amount. The amount reproduces the table. It is not printed as its own line.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>28210</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdSingleRate">
+      <Name>Wisconsin single standard deduction phaseout rate</Name>
+      <Description>Single standard deduction phaseout rate. 12 percent of the amount by which the band midpoint exceeds the phaseout start. The rate reproduces the table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>12/100</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdMfjRate">
+      <Name>Wisconsin married filing jointly standard deduction phaseout rate</Name>
+      <Description>Married filing jointly standard deduction phaseout rate, 19.778 percent. The rate reproduces the table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>19778/100000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdFirstBand">
+      <Name>Wisconsin standard deduction first row top</Name>
+      <Description>Top of the first standard deduction row. At least $0 but less than this amount.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>13390</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdSecondBand">
+      <Name>Wisconsin standard deduction second row top</Name>
+      <Description>Top of the second standard deduction row and the start of the $500 rows.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>13500</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdBandWidth">
+      <Name>Wisconsin standard deduction row width</Name>
+      <Description>Width of a standard deduction row after the second row.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>500</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdMfjLastLo">
+      <Name>Wisconsin last standard deduction row start</Name>
+      <Description>Start of the last married filing jointly standard deduction row, at least this amount but less than $155,169.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>155000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiStdMfjLastHi">
+      <Name>Wisconsin standard deduction zero threshold</Name>
+      <Description>Wisconsin income of this amount or more has a standard deduction of zero.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>155169</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiExemption">
+      <Name>Wisconsin personal exemption</Name>
+      <Description>Exemption amount for the filer, and for the spouse on a joint return. Line 10b uses $250 and is out of scope.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>700</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiTaxTableLimit">
+      <Name>Wisconsin tax table ceiling</Name>
+      <Description>Taxable income below this amount uses the tax table. This amount or more uses the worksheet.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>100000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiTableBand20">
+      <Name>Wisconsin tax table first row top</Name>
+      <Description>Top of the first tax table row. At least $0 but less than this amount.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>20</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiTableBand40">
+      <Name>Wisconsin tax table second row top</Name>
+      <Description>Top of the second tax table row.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>40</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiTableBand100">
+      <Name>Wisconsin tax table third row top</Name>
+      <Description>Top of the third tax table row. Later rows are this wide.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>100</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiRate35">
+      <Name>Wisconsin 3.5 percent rate</Name>
+      <Description>First bracket rate, 3.5 percent. Wis. Stat. section 71.06. The rate reproduces the tax table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>35/1000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiRate44">
+      <Name>Wisconsin 4.4 percent rate</Name>
+      <Description>Second bracket rate, 4.4 percent. Wis. Stat. section 71.06. The rate reproduces the tax table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>44/1000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiRate53">
+      <Name>Wisconsin 5.3 percent rate</Name>
+      <Description>Third bracket rate, 5.3 percent. 2025 Form 1 instructions, page 44 worksheet.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>53/1000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiRate765">
+      <Name>Wisconsin 7.65 percent rate</Name>
+      <Description>Top bracket rate, 7.65 percent. 2025 Form 1 instructions, page 44 worksheet.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>765/10000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiSingleLimit35">
+      <Name>Wisconsin single 3.5 percent bracket top</Name>
+      <Description>Top of the single 3.5 percent bracket. Derived so the worksheet matches the tax table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>14680</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiSingleLimit44">
+      <Name>Wisconsin single 4.4 percent bracket top</Name>
+      <Description>Top of the single 4.4 percent bracket. Derived so the worksheet matches the tax table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>50480</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiSingleLimit765">
+      <Name>Wisconsin single 7.65 percent threshold</Name>
+      <Description>Single taxable income of this amount or more uses 7.65 percent on the worksheet. Less than this amount, and at least $100,000, uses 5.3 percent.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>323290</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiMfjLimit35">
+      <Name>Wisconsin joint 3.5 percent bracket top</Name>
+      <Description>Top of the married filing jointly 3.5 percent bracket. Derived so the worksheet matches the tax table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>19580</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiMfjLimit44">
+      <Name>Wisconsin joint 4.4 percent bracket top</Name>
+      <Description>Top of the married filing jointly 4.4 percent bracket. Derived so the worksheet matches the tax table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>67300</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiMfjLimit765">
+      <Name>Wisconsin joint 7.65 percent threshold</Name>
+      <Description>Married filing jointly taxable income of this amount or more uses 7.65 percent on the worksheet.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>431060</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiSingleBase44">
+      <Name>Wisconsin single tax at the 3.5 percent bracket top</Name>
+      <Description>Single tax at the top of the 3.5 percent bracket. 3.5 percent of $14,680.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>513.80</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiSingleBase53">
+      <Name>Wisconsin single tax at the 4.4 percent bracket top</Name>
+      <Description>Single tax at the top of the 4.4 percent bracket.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>2089</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiMfjBase44">
+      <Name>Wisconsin joint tax at the 3.5 percent bracket top</Name>
+      <Description>Married filing jointly tax at the top of the 3.5 percent bracket. 3.5 percent of $19,580.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>685.30</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiMfjBase53">
+      <Name>Wisconsin joint tax at the 4.4 percent bracket top</Name>
+      <Description>Married filing jointly tax at the top of the 4.4 percent bracket.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>2784.98</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiWsSingleSub53">
+      <Name>Wisconsin single worksheet subtraction at 5.3 percent</Name>
+      <Description>Single worksheet subtraction for taxable income of at least $100,000 but less than $323,290.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>586.44</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiWsSingleSub765">
+      <Name>Wisconsin single worksheet subtraction at 7.65 percent</Name>
+      <Description>Single worksheet subtraction for taxable income of $323,290 or more.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>8183.76</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiWsMfjSub53">
+      <Name>Wisconsin joint worksheet subtraction at 5.3 percent</Name>
+      <Description>Married filing jointly worksheet subtraction for taxable income of at least $100,000 but less than $431,060.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>781.92</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiWsMfjSub765">
+      <Name>Wisconsin joint worksheet subtraction at 7.65 percent</Name>
+      <Description>Married filing jointly worksheet subtraction for taxable income of $431,060 or more.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>10911.83</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiMccRate">
+      <Name>Wisconsin married couple credit rate</Name>
+      <Description>Married couple credit rate, 3 percent. 2025 Form 1, Schedule 2, line 7.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>3/100</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiMccWageCap">
+      <Name>Wisconsin married couple credit wage cap</Name>
+      <Description>Married couple credit wage cap. The credit uses the lower earner's wages, but not more than this amount, so the credit is at most $480.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>16000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiUnderpaymentFloor">
+      <Name>Wisconsin underpayment interest floor</Name>
+      <Description>Underpayment interest applies when line 43 is at least this amount and more than 10 percent of line 22. Schedule U is not built.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>500</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiUnderpaymentRate">
+      <Name>Wisconsin underpayment interest share of tax</Name>
+      <Description>Underpayment interest applies when line 43 is more than this share of line 22. Lines 30 through 35 are zero in scope, so the tax shown is line 22.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>10/100</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wiZero">
+      <Name>Zero</Name>
+      <Description>Zero entered on Form 1 lines this return does not use.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/wiResidencyOptions">
+      <Name>Wisconsin residency answers</Name>
+      <Description>Full-year resident is the supported Form 1. Part-year and nonresident returns use Form 1NPR and stop.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>fullYear</String>
+          <String>partYear</String>
+          <String>nonresident</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/wiResidencyStatus">
+      <Name>Wisconsin residency</Name>
+      <Description>Full year means you, and your spouse if you file jointly, were Wisconsin residents all year. Part-year and nonresident stop.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Enum optionsPath="/wiResidencyOptions" />
+      </Writable>
+    </Fact>
+    <Fact path="/wiHasAdditionsOrSubtractions">
+      <Name>Wisconsin additions or subtractions</Name>
+      <Description>Yes if the return has a Schedule AD or Schedule SB amount, including medical or long-term care insurance, tuition, private-school tuition, Edvest, Tomorrow's Scholar, ABLE, armed forces active-duty pay, or any other Wisconsin addition or subtraction.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/wiHasUnmodeledCredits">
+      <Name>Wisconsin credits this tool does not calculate</Name>
+      <Description>Yes if the return claims the school property tax credit, the itemized deduction credit, the homestead credit, the veterans property tax credit, or a Schedule CR credit.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/wiHasUseTax">
+      <Name>Wisconsin use tax</Name>
+      <Description>Yes if sales or use tax is due on out-of-state purchases. Line 23 is not calculated.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/wiHasTaxPaidOtherState">
+      <Name>Income tax paid to another state</Name>
+      <Description>Yes if Wisconsin income was also taxed by another state. Line 20 is not calculated.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/wiLine1">
+      <Name>Form 1 line 1 federal adjusted gross income</Name>
+      <Description>Federal AGI, Form 1040 line 11. 2025 Form 1, line 1.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency module="taxCalculations" path="/agi" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine2">
+      <Name>Form 1 line 2</Name>
+      <Description>Zero. Schedule I adjustments stop the return. 2025 Form 1, line 2.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine4">
+      <Name>Form 1 line 4</Name>
+      <Description>Zero. Schedule AD additions stop the return. 2025 Form 1, line 4.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine6">
+      <Name>Form 1 line 6</Name>
+      <Description>Zero. Schedule SB subtractions stop the return. 2025 Form 1, line 6.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine3">
+      <Name>Form 1 line 3</Name>
+      <Description>Line 1 plus line 2. Line 2 is zero, so this equals line 1. 2025 Form 1, line 3.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine1" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine5">
+      <Name>Form 1 line 5</Name>
+      <Description>Line 3 plus line 4. Line 4 is zero, so this equals line 1. 2025 Form 1, line 5.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine1" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine7">
+      <Name>Form 1 line 7 Wisconsin income</Name>
+      <Description>Line 5 minus line 6. Line 6 is zero, so this equals line 1. The standard deduction is keyed on this line. 2025 Form 1, line 7.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine1" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiWagesInLine3">
+      <Name>W-2 wages included in line 3</Name>
+      <Description>Federal W-2 wages. On a supported return that is the only income in line 3.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency module="formW2s" path="/wages" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdMidpoint">
+      <Name>Standard deduction row midpoint</Name>
+      <Description>At least / but less than. Below $13,390 the midpoint is half of that edge. From $13,390 to $13,500 it is the average of the edges. A $500 row uses its start plus $250. From $155,000 to $155,169 it is the average of those edges. $155,169 or more does not use a midpoint.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><GreaterThanOrEqual><Left><Dependency path="/wiLine7" /></Left><Right><Dependency path="/wiStdMfjLastHi" /></Right></GreaterThanOrEqual></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+          <Case>
+            <When><GreaterThanOrEqual><Left><Dependency path="/wiLine7" /></Left><Right><Dependency path="/wiStdMfjLastLo" /></Right></GreaterThanOrEqual></When>
+            <Then><Multiply><Add><Dependency path="/wiStdMfjLastLo" /><Dependency path="/wiStdMfjLastHi" /></Add><Rational>1/2</Rational></Multiply></Then>
+          </Case>
+          <Case>
+            <When><GreaterThanOrEqual><Left><Dependency path="/wiLine7" /></Left><Right><Dependency path="/wiStdSecondBand" /></Right></GreaterThanOrEqual></When>
+            <Then><Add><Dependency path="/wiStdSecondBand" /><StepwiseMultiply><Multiplicand><Subtract><Minuend><Dependency path="/wiLine7" /></Minuend><Subtrahends><Dependency path="/wiStdSecondBand" /></Subtrahends></Subtract></Multiplicand><Rate><Rational>500/500</Rational></Rate></StepwiseMultiply><Dollar>250</Dollar></Add></Then>
+          </Case>
+          <Case>
+            <When><GreaterThanOrEqual><Left><Dependency path="/wiLine7" /></Left><Right><Dependency path="/wiStdFirstBand" /></Right></GreaterThanOrEqual></When>
+            <Then><Multiply><Add><Dependency path="/wiStdFirstBand" /><Dependency path="/wiStdSecondBand" /></Add><Rational>1/2</Rational></Multiply></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Multiply><Dependency path="/wiStdFirstBand" /><Rational>1/2</Rational></Multiply></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdMax">
+      <Name>Standard deduction maximum for this filing status</Name>
+      <Description>Married filing jointly uses the joint maximum. Every other status uses the single maximum. A status other than single or joint stops.</Description>
+      <Derived>
+        <Switch>
+          <Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Dependency path="/wiStdMfjMax" /></Then></Case>
+          <Case><When><True /></When><Then><Dependency path="/wiStdSingleMax" /></Then></Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdPhaseStart">
+      <Name>Standard deduction phaseout start for this filing status</Name>
+      <Description>Married filing jointly uses the joint start. Every other status uses the single start.</Description>
+      <Derived>
+        <Switch>
+          <Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Dependency path="/wiStdMfjPhaseStart" /></Then></Case>
+          <Case><When><True /></When><Then><Dependency path="/wiStdSinglePhaseStart" /></Then></Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdRate">
+      <Name>Standard deduction phaseout rate for this filing status</Name>
+      <Description>Married filing jointly uses 19.778 percent. Every other status uses 12 percent.</Description>
+      <Derived>
+        <Switch>
+          <Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Dependency path="/wiStdMfjRate" /></Then></Case>
+          <Case><When><True /></When><Then><Dependency path="/wiStdSingleRate" /></Then></Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdExcess">
+      <Name>Band midpoint minus the phaseout start</Name>
+      <Description>Negative while the deduction is still at the maximum.</Description>
+      <Derived>
+        <Subtract><Minuend><Dependency path="/wiStdMidpoint" /></Minuend><Subtrahends><Dependency path="/wiStdPhaseStart" /></Subtrahends></Subtract>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdRaw">
+      <Name>Standard deduction before the floor and the cap</Name>
+      <Description>Maximum minus the phaseout rate times the excess.</Description>
+      <Derived>
+        <Subtract><Minuend><Dependency path="/wiStdMax" /></Minuend><Subtrahends><Multiply><Dependency path="/wiStdExcess" /><Dependency path="/wiStdRate" /></Multiply></Subtrahends></Subtract>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdCapped">
+      <Name>Standard deduction after the floor and the cap, before the dollar round</Name>
+      <Description>Not below zero and not above the maximum.</Description>
+      <Derived>
+        <LesserOf>
+          <GreaterOf><Dependency path="/wiStdRaw" /><Dollar>0</Dollar></GreaterOf>
+          <Dependency path="/wiStdMax" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdTimes100">
+      <Name>One hundred times the exact capped standard deduction</Name>
+      <Description>One hundred times the maximum, minus the excess times one hundred times the rate, then clamped to zero and to one hundred times the maximum. For these rates the product is exact to a tenth of a cent.</Description>
+      <Derived>
+        <LesserOf>
+          <GreaterOf>
+            <Subtract><Minuend><Multiply><Dependency path="/wiStdMax" /><Int>100</Int></Multiply></Minuend><Subtrahends><Multiply><Dependency path="/wiStdExcess" /><Multiply><Dependency path="/wiStdRate" /><Int>100</Int></Multiply></Multiply></Subtrahends></Subtract>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+          <Multiply><Dependency path="/wiStdMax" /><Int>100</Int></Multiply>
+        </LesserOf>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdCentRound">
+      <Name>Standard deduction after the cent-then-dollar round</Name>
+      <Description>Round of the capped amount. Dollar times Rational scales to cents half-even before Round half-up.</Description>
+      <Derived>
+        <Round><Dependency path="/wiStdCapped" /></Round>
+      </Derived>
+    </Fact>
+    <Fact path="/wiStdRounded">
+      <Name>Standard deduction rounded once</Name>
+      <Description>One half-up round. Subtract $1 when the cent-then-dollar result exceeds the exact product by more than 50 cents. An exact half dollar stays the half-up dollar.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply><Dependency path="/wiStdCentRound" /><Int>100</Int></Multiply>
+                    </Minuend>
+                    <Subtrahends><Dependency path="/wiStdTimes100" /></Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right><Dollar>50</Dollar></Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend><Dependency path="/wiStdCentRound" /></Minuend>
+                <Subtrahends><Dollar>1</Dollar></Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dependency path="/wiStdCentRound" /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine8">
+      <Name>Form 1 line 8 standard deduction</Name>
+      <Description>The rounded table amount. Wisconsin income of $155,169 or more is zero. 2025 Form 1, line 8.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><GreaterThanOrEqual><Left><Dependency path="/wiLine7" /></Left><Right><Dependency path="/wiStdMfjLastHi" /></Right></GreaterThanOrEqual></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dependency path="/wiStdRounded" /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine9">
+      <Name>Form 1 line 9</Name>
+      <Description>Line 7 minus line 8, not below zero. 2025 Form 1, line 9.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf><Subtract><Minuend><Dependency path="/wiLine7" /></Minuend><Subtrahends><Dependency path="/wiLine8" /></Subtrahends></Subtract><Dollar>0</Dollar></GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/wiExemptionCount">
+      <Name>Form 1 line 10a exemption count</Name>
+      <Description>One for the filer. Two on a joint return. No dependent exemptions.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Int>2</Int></Then></Case>
+          <Case><When><True /></When><Then><Int>1</Int></Then></Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine10a">
+      <Name>Form 1 line 10a exemption amount</Name>
+      <Description>The exemption count times $700. 2025 Form 1, line 10a.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Multiply><Dependency path="/wiExemption" /><Dependency path="/wiExemptionCount" /></Multiply>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine10bCount">
+      <Name>Form 1 line 10b box count</Name>
+      <Description>Zero. Age 65 or blindness stops the return. 2025 Form 1, line 10b.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine10b">
+      <Name>Form 1 line 10b amount</Name>
+      <Description>Zero. The $250 additional exemption is not calculated. 2025 Form 1, line 10b.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine10c">
+      <Name>Form 1 line 10c</Name>
+      <Description>Line 10a plus line 10b. Line 10b is zero, so this equals line 10a. 2025 Form 1, line 10c.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine10a" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine11">
+      <Name>Form 1 line 11</Name>
+      <Description>Line 9 minus line 10c, not below zero. 2025 Form 1, line 11.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf><Subtract><Minuend><Dependency path="/wiLine9" /></Minuend><Subtrahends><Dependency path="/wiLine10c" /></Subtrahends></Subtract><Dollar>0</Dollar></GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/wiUsesTable">
+      <Name>Line 11 uses the tax table</Name>
+      <Description>True when line 11 is less than $100,000. $100,000 or more uses the worksheet. A row is at least the low amount and less than the high amount.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <LessThan><Left><Dependency path="/wiLine11" /></Left><Right><Dependency path="/wiTaxTableLimit" /></Right></LessThan>
+      </Derived>
+    </Fact>
+    <Fact path="/wiTaxMidpoint">
+      <Name>Tax table row midpoint</Name>
+      <Description>At least / but less than. Below $20 the midpoint is $10. Below $40 it is $30. Below $100 it is $70. A later row is the $100 boundary plus $50. Line 11 of $100,000 does not use this midpoint.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><LessThan><Left><Dependency path="/wiLine11" /></Left><Right><Dependency path="/wiTableBand20" /></Right></LessThan></When>
+            <Then><Dollar>10</Dollar></Then>
+          </Case>
+          <Case>
+            <When><LessThan><Left><Dependency path="/wiLine11" /></Left><Right><Dependency path="/wiTableBand40" /></Right></LessThan></When>
+            <Then><Dollar>30</Dollar></Then>
+          </Case>
+          <Case>
+            <When><LessThan><Left><Dependency path="/wiLine11" /></Left><Right><Dependency path="/wiTableBand100" /></Right></LessThan></When>
+            <Then><Dollar>70</Dollar></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Add><StepwiseMultiply><Multiplicand><Dependency path="/wiLine11" /></Multiplicand><Rate><Rational>100/100</Rational></Rate></StepwiseMultiply><Dollar>50</Dollar></Add></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiTaxBase">
+      <Name>Tax at the bottom of the table bracket</Name>
+      <Description>Zero in the 3.5 percent bracket. The bracket base in a later bracket. Married filing jointly uses the joint schedule. Any other status uses the single schedule.</Description>
+      <Derived>
+        <Switch><Case><When><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiMfjLimit35" /></Right></LessThanOrEqual></All></When><Then><Dollar>0</Dollar></Then></Case><Case><When><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiMfjLimit44" /></Right></LessThanOrEqual></All></When><Then><Dependency path="/wiMfjBase44" /></Then></Case><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Dependency path="/wiMfjBase53" /></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiSingleLimit35" /></Right></LessThanOrEqual></When><Then><Dollar>0</Dollar></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiSingleLimit44" /></Right></LessThanOrEqual></When><Then><Dependency path="/wiSingleBase44" /></Then></Case><Case><When><True /></When><Then><Dependency path="/wiSingleBase53" /></Then></Case></Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiTaxExcess">
+      <Name>Midpoint minus the table bracket floor</Name>
+      <Description>The midpoint itself in the 3.5 percent bracket.</Description>
+      <Derived>
+        <Switch><Case><When><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiMfjLimit35" /></Right></LessThanOrEqual></All></When><Then><Dependency path="/wiTaxMidpoint" /></Then></Case><Case><When><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiMfjLimit44" /></Right></LessThanOrEqual></All></When><Then><Subtract><Minuend><Dependency path="/wiTaxMidpoint" /></Minuend><Subtrahends><Dependency path="/wiMfjLimit35" /></Subtrahends></Subtract></Then></Case><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Subtract><Minuend><Dependency path="/wiTaxMidpoint" /></Minuend><Subtrahends><Dependency path="/wiMfjLimit44" /></Subtrahends></Subtract></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiSingleLimit35" /></Right></LessThanOrEqual></When><Then><Dependency path="/wiTaxMidpoint" /></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiSingleLimit44" /></Right></LessThanOrEqual></When><Then><Subtract><Minuend><Dependency path="/wiTaxMidpoint" /></Minuend><Subtrahends><Dependency path="/wiSingleLimit35" /></Subtrahends></Subtract></Then></Case><Case><When><True /></When><Then><Subtract><Minuend><Dependency path="/wiTaxMidpoint" /></Minuend><Subtrahends><Dependency path="/wiSingleLimit44" /></Subtrahends></Subtract></Then></Case></Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiTaxRate">
+      <Name>Table bracket rate</Name>
+      <Description>3.5, 4.4, or 5.3 percent. The table stops below $100,000, under the 7.65 percent threshold.</Description>
+      <Derived>
+        <Switch><Case><When><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiMfjLimit35" /></Right></LessThanOrEqual></All></When><Then><Dependency path="/wiRate35" /></Then></Case><Case><When><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiMfjLimit44" /></Right></LessThanOrEqual></All></When><Then><Dependency path="/wiRate44" /></Then></Case><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Dependency path="/wiRate53" /></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiSingleLimit35" /></Right></LessThanOrEqual></When><Then><Dependency path="/wiRate35" /></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/wiTaxMidpoint" /></Left><Right><Dependency path="/wiSingleLimit44" /></Right></LessThanOrEqual></When><Then><Dependency path="/wiRate44" /></Then></Case><Case><When><True /></When><Then><Dependency path="/wiRate53" /></Then></Case></Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiTableCentRound">
+      <Name>Table tax after the cent-then-dollar round</Name>
+      <Description>Round of the base plus the excess times the rate.</Description>
+      <Derived>
+        <Round><Add><Dependency path="/wiTaxBase" /><Multiply><Dependency path="/wiTaxExcess" /><Dependency path="/wiTaxRate" /></Multiply></Add></Round>
+      </Derived>
+    </Fact>
+    <Fact path="/wiTableTimes100">
+      <Name>One hundred times the exact table tax</Name>
+      <Description>One hundred times the base, plus the excess times one hundred times the rate.</Description>
+      <Derived>
+        <Add><Multiply><Dependency path="/wiTaxBase" /><Int>100</Int></Multiply><Multiply><Dependency path="/wiTaxExcess" /><Multiply><Dependency path="/wiTaxRate" /><Int>100</Int></Multiply></Multiply></Add>
+      </Derived>
+    </Fact>
+    <Fact path="/wiTableTax">
+      <Name>Tax table amount rounded once</Name>
+      <Description>One half-up round of the tax at the row midpoint. Subtract $1 when the cent-then-dollar result exceeds the exact product by more than 50 cents.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply><Dependency path="/wiTableCentRound" /><Int>100</Int></Multiply>
+                    </Minuend>
+                    <Subtrahends><Dependency path="/wiTableTimes100" /></Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right><Dollar>50</Dollar></Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend><Dependency path="/wiTableCentRound" /></Minuend>
+                <Subtrahends><Dollar>1</Dollar></Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dependency path="/wiTableCentRound" /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiWsRate">
+      <Name>Worksheet rate</Name>
+      <Description>5.3 percent below the top threshold and 7.65 percent at or above it. Married filing jointly uses the joint threshold.</Description>
+      <Derived>
+        <Switch><Case><When><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><LessThan><Left><Dependency path="/wiLine11" /></Left><Right><Dependency path="/wiMfjLimit765" /></Right></LessThan></All></When><Then><Dependency path="/wiRate53" /></Then></Case><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Dependency path="/wiRate765" /></Then></Case><Case><When><LessThan><Left><Dependency path="/wiLine11" /></Left><Right><Dependency path="/wiSingleLimit765" /></Right></LessThan></When><Then><Dependency path="/wiRate53" /></Then></Case><Case><When><True /></When><Then><Dependency path="/wiRate765" /></Then></Case></Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiWsSub">
+      <Name>Worksheet subtraction</Name>
+      <Description>The page 44 subtraction for this filing status and this line 11.</Description>
+      <Derived>
+        <Switch><Case><When><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><LessThan><Left><Dependency path="/wiLine11" /></Left><Right><Dependency path="/wiMfjLimit765" /></Right></LessThan></All></When><Then><Dependency path="/wiWsMfjSub53" /></Then></Case><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Dependency path="/wiWsMfjSub765" /></Then></Case><Case><When><LessThan><Left><Dependency path="/wiLine11" /></Left><Right><Dependency path="/wiSingleLimit765" /></Right></LessThan></When><Then><Dependency path="/wiWsSingleSub53" /></Then></Case><Case><When><True /></When><Then><Dependency path="/wiWsSingleSub765" /></Then></Case></Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiWsRaw">
+      <Name>Worksheet tax before the dollar round</Name>
+      <Description>Line 11 times the rate, minus the subtraction.</Description>
+      <Derived>
+        <Subtract><Minuend><Multiply><Dependency path="/wiLine11" /><Dependency path="/wiWsRate" /></Multiply></Minuend><Subtrahends><Dependency path="/wiWsSub" /></Subtrahends></Subtract>
+      </Derived>
+    </Fact>
+    <Fact path="/wiWsCentRound">
+      <Name>Worksheet tax after the cent-then-dollar round</Name>
+      <Description>Round of line 11 times the rate minus the subtraction.</Description>
+      <Derived>
+        <Round><Dependency path="/wiWsRaw" /></Round>
+      </Derived>
+    </Fact>
+    <Fact path="/wiWsTimes100">
+      <Name>One hundred times the exact worksheet tax</Name>
+      <Description>Line 11 times one hundred times the rate, minus one hundred times the subtraction.</Description>
+      <Derived>
+        <Subtract><Minuend><Multiply><Dependency path="/wiLine11" /><Multiply><Dependency path="/wiWsRate" /><Int>100</Int></Multiply></Multiply></Minuend><Subtrahends><Multiply><Dependency path="/wiWsSub" /><Int>100</Int></Multiply></Subtrahends></Subtract>
+      </Derived>
+    </Fact>
+    <Fact path="/wiWorksheetTax">
+      <Name>Worksheet tax rounded once</Name>
+      <Description>One half-up round of the page 44 worksheet. Subtract $1 when the cent-then-dollar result exceeds the exact product by more than 50 cents.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply><Dependency path="/wiWsCentRound" /><Int>100</Int></Multiply>
+                    </Minuend>
+                    <Subtrahends><Dependency path="/wiWsTimes100" /></Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right><Dollar>50</Dollar></Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend><Dependency path="/wiWsCentRound" /></Minuend>
+                <Subtrahends><Dollar>1</Dollar></Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dependency path="/wiWsCentRound" /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine12">
+      <Name>Form 1 line 12 tax</Name>
+      <Description>The tax table amount when line 11 is less than $100,000. The worksheet amount when line 11 is $100,000 or more. 2025 Form 1, line 12.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case><When><Dependency path="/wiUsesTable" /></When><Then><Dependency path="/wiTableTax" /></Then></Case>
+          <Case><When><True /></When><Then><Dependency path="/wiWorksheetTax" /></Then></Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine13">
+      <Name>Form 1 line 13</Name>
+      <Description>Zero. The itemized deduction credit stops the return. 2025 Form 1, line 13.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine14">
+      <Name>Form 1 line 14</Name>
+      <Description>Zero. The additional child and dependent care credit stops the return. 2025 Form 1, line 14.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine15">
+      <Name>Form 1 line 15</Name>
+      <Description>Zero. The blind worker transportation services credit stops the return. 2025 Form 1, line 15.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine16">
+      <Name>Form 1 line 16</Name>
+      <Description>Zero. The school property tax credit stops the return. 2025 Form 1, line 16.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine19">
+      <Name>Form 1 line 19</Name>
+      <Description>Zero. The Schedule CR nonrefundable credits stops the return. 2025 Form 1, line 19.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine20">
+      <Name>Form 1 line 20</Name>
+      <Description>Zero. The tax paid to another state stops the return. 2025 Form 1, line 20.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiPrimaryWages">
+      <Name>Your wages for Schedule 2</Name>
+      <Description>Primary filer W-2 wages, column A.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency module="formW2s" path="/primaryFilerWages" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiSpouseWages">
+      <Name>Spouse wages for Schedule 2</Name>
+      <Description>Secondary filer W-2 wages on a joint return. Zero otherwise.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Dependency module="formW2s" path="/secondaryFilerWages" /></Then></Case>
+          <Case><When><True /></When><Then><Dollar>0</Dollar></Then></Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiMccWages">
+      <Name>Schedule 2 line 6</Name>
+      <Description>The smaller of the two spouses' wages, but not more than $16,000. Zero when the return is not joint.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When>
+            <Then>
+              <LesserOf>
+                <Dependency path="/wiPrimaryWages" />
+                <Dependency path="/wiSpouseWages" />
+                <Dependency path="/wiMccWageCap" />
+              </LesserOf>
+            </Then>
+          </Case>
+          <Case><When><True /></When><Then><Dollar>0</Dollar></Then></Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine18">
+      <Name>Form 1 line 18 married couple credit</Name>
+      <Description>3 percent of Schedule 2 line 6, rounded half up to the dollar. 3 percent of a whole-dollar amount is exact to the cent. The wage cap makes the credit at most $480. Zero when the return is not joint. 2025 Form 1, line 18.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Round><Multiply><Dependency path="/wiMccWages" /><Dependency path="/wiMccRate" /></Multiply></Round>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine21">
+      <Name>Form 1 line 21</Name>
+      <Description>The sum of lines 13 through 20. Every credit except line 18 is zero, so this equals line 18. 2025 Form 1, line 21.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine18" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine22">
+      <Name>Form 1 line 22 net tax</Name>
+      <Description>Line 12 minus line 21, not below zero. The form body subtracts line 21. 2025 Form 1, line 22.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf><Subtract><Minuend><Dependency path="/wiLine12" /></Minuend><Subtrahends><Dependency path="/wiLine21" /></Subtrahends></Subtract><Dollar>0</Dollar></GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine23">
+      <Name>Form 1 line 23</Name>
+      <Description>Zero. sales and use tax is not calculated. 2025 Form 1, line 23.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine24">
+      <Name>Form 1 line 24</Name>
+      <Description>Zero. donations is not calculated. 2025 Form 1, line 24.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine25">
+      <Name>Form 1 line 25</Name>
+      <Description>Zero. penalties on retirement plans is not calculated. 2025 Form 1, line 25.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine26">
+      <Name>Form 1 line 26</Name>
+      <Description>Zero. other penalties is not calculated. 2025 Form 1, line 26.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine27">
+      <Name>Form 1 line 27</Name>
+      <Description>The sum of lines 22 through 26. Lines 23 through 26 are zero, so this equals line 22. 2025 Form 1, line 27.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine22" />
+      </Derived>
+    </Fact>
+    <Fact path="/formW2s/*/wiWithholding">
+      <Name>This W-2's Wisconsin withholding</Name>
+      <Description>Box 17 when box 15 is Wisconsin, the same state as the residence. A blank box 15 is in scope and contributes zero. A box 15 for another state stops the return and contributes zero here.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete><Dependency path="../writableState" /></IsComplete>
+                <Equal>
+                  <Left><Dependency path="../writableState" /></Left>
+                  <Right><Enum optionsPath="/incomeFormStateOptions">sameState</Enum></Right>
+                </Equal>
+              </All>
+            </When>
+            <Then><Dependency path="../stateWithholding" /></Then>
+          </Case>
+          <Case><When><True /></When><Then><Dollar>0</Dollar></Then></Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine28">
+      <Name>Form 1 line 28 Wisconsin tax withheld</Name>
+      <Description>Sum of W-2 box 17 where box 15 is Wisconsin. 2025 Form 1, line 28.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <CollectionSum><Dependency path="/formW2s/*/wiWithholding" /></CollectionSum>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine29">
+      <Name>Form 1 line 29</Name>
+      <Description>Zero. estimated tax payments is not calculated. 2025 Form 1, line 29.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine30">
+      <Name>Form 1 line 30</Name>
+      <Description>Zero. earned income credit is not calculated. 2025 Form 1, line 30.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine31">
+      <Name>Form 1 line 31</Name>
+      <Description>Zero. farmland preservation credit is not calculated. 2025 Form 1, line 31.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine32">
+      <Name>Form 1 line 32</Name>
+      <Description>Zero. repayment credit is not calculated. 2025 Form 1, line 32.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine33">
+      <Name>Form 1 line 33</Name>
+      <Description>Zero. homestead credit is not calculated. 2025 Form 1, line 33.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine34">
+      <Name>Form 1 line 34</Name>
+      <Description>Zero. veterans property tax credit is not calculated. 2025 Form 1, line 34.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine35">
+      <Name>Form 1 line 35</Name>
+      <Description>Zero. refundable Schedule CR credits is not calculated. 2025 Form 1, line 35.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine36">
+      <Name>Form 1 line 36</Name>
+      <Description>Zero. amounts previously paid is not calculated. 2025 Form 1, line 36.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine38">
+      <Name>Form 1 line 38</Name>
+      <Description>Zero. amounts previously refunded is not calculated. 2025 Form 1, line 38.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine37">
+      <Name>Form 1 line 37</Name>
+      <Description>The sum of lines 28 through 36. Every line except line 28 is zero, so this equals line 28. 2025 Form 1, line 37.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine28" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine39">
+      <Name>Form 1 line 39</Name>
+      <Description>Line 37 minus line 38. Line 38 is zero, so this equals line 28. 2025 Form 1, line 39.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine28" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine40">
+      <Name>Form 1 line 40 overpayment</Name>
+      <Description>Line 39 minus line 27, not below zero. 2025 Form 1, line 40.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf><Subtract><Minuend><Dependency path="/wiLine39" /></Minuend><Subtrahends><Dependency path="/wiLine27" /></Subtrahends></Subtract><Dollar>0</Dollar></GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine41">
+      <Name>Form 1 line 41 refund</Name>
+      <Description>The overpayment. Nothing is applied to next year's estimated tax. 2025 Form 1, line 41.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine40" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine42">
+      <Name>Form 1 line 42 applied to estimated tax</Name>
+      <Description>Zero. 2025 Form 1, line 42.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine43">
+      <Name>Form 1 line 43 amount underpaid</Name>
+      <Description>Line 27 minus line 39, not below zero. 2025 Form 1, line 43.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf><Subtract><Minuend><Dependency path="/wiLine27" /></Minuend><Subtrahends><Dependency path="/wiLine39" /></Subtrahends></Subtract><Dollar>0</Dollar></GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine44">
+      <Name>Form 1 line 44 underpayment interest</Name>
+      <Description>Zero. The return stops when underpayment interest is due, so a printed return has no interest. 2025 Form 1, line 44.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine45">
+      <Name>Form 1 line 45 amount you owe</Name>
+      <Description>Line 43 plus line 44. Line 44 is zero, so this equals line 43. 2025 Form 1, line 45.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiLine43" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiLine46">
+      <Name>Form 1 line 46 interest</Name>
+      <Description>Zero. 2025 Form 1, line 46.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/wiZero" />
+      </Derived>
+    </Fact>
+    <Fact path="/wiHasOtherFederalIncome">
+      <Name>Federal income other than W-2 wages</Name>
+      <Description>Interest, tax-exempt interest, Social Security, a sale or capital gain, 1099-MISC, a 1099-R, Schedule C, or Schedule E. Any of that income stops a Form 1.</Description>
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete><Dependency module="income" path="/totalIncome" /></IsComplete>
+            <IsComplete><Dependency module="formW2s" path="/wages" /></IsComplete>
+            <NotEqual>
+              <Left><Dependency module="income" path="/totalIncome" /></Left>
+              <Right><Dependency module="formW2s" path="/wages" /></Right>
+            </NotEqual>
+          </All>
+          <GreaterThan><Left><Dependency module="interest" path="/taxExemptInterest" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan>
+          <GreaterThan><Left><Dependency module="socialSecurity" path="/socialSecurityBenefits" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan>
+          <Dependency module="scheduleD" path="/soldCapitalAssets" />
+          <Dependency module="form1099Misc" path="/has1099Misc" />
+          <GreaterThan><Left><CollectionSize><Dependency module="form1099Rs" path="/form1099Rs" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/wiHasDependents">
+      <Name>Dependents or a qualifying person</Name>
+      <Description>Anyone in the household, or a filer who is a qualifying person for the child and dependent care credit. The extra exemption, the Wisconsin earned income credit, and Wisconsin Form 2441 are not calculated.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan><Left><CollectionSize><Dependency module="familyAndHousehold" path="/familyAndHousehold" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan>
+          <GreaterThan><Left><Dependency module="filers" path="/cdccQualifyingFilersCount" /></Left><Right><Int>0</Int></Right></GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/wiAgeOrBlind">
+      <Name>Age 65 or blind</Name>
+      <Description>Primary filer is 65 or older or blind. On a joint return, either spouse. Line 10b and the federal additional standard deduction are not calculated. The spouse is checked only on a joint return.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/age65OrOlder" />
+          <Dependency module="filers" path="/primaryFiler/isBlind" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Any>
+              <Dependency module="filers" path="/secondaryFiler/age65OrOlder" />
+              <Dependency module="filers" path="/secondaryFiler/isBlind" />
+            </Any>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/wiClaimedAsDependent">
+      <Name>Filer can be claimed as a dependent</Name>
+      <Description>The primary filer, or either spouse on a joint return. Someone who can be claimed does not use the standard deduction table. The spouse is checked only on a joint return.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/canBeClaimed" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Dependency module="filers" path="/secondaryFiler/canBeClaimed" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/wiFilingStatusUnsupported">
+      <Name>Filing status other than single or joint</Name>
+      <Description>The supported Form 1 is single, or married filing jointly with both spouses Wisconsin residents all year. Married filing separately and head of household are not calculated.</Description>
+      <Derived>
+        <Not>
+          <Any>
+            <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          </Any>
+        </Not>
+      </Derived>
+    </Fact>
+    <Fact path="/wiResidencyIsOutOfScope">
+      <Name>Wisconsin residency is part-year or nonresident</Name>
+      <Description>True for Form 1NPR. Incomplete until residency is answered.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left><Dependency path="/wiResidencyStatus" /></Left>
+            <Right><Enum optionsPath="/wiResidencyOptions">partYear</Enum></Right>
+          </Equal>
+          <Equal>
+            <Left><Dependency path="/wiResidencyStatus" /></Left>
+            <Right><Enum optionsPath="/wiResidencyOptions">nonresident</Enum></Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/wiUnderpaymentInterestDue">
+      <Name>Underpayment interest is due</Name>
+      <Description>Line 43 is at least $500 and more than 10 percent of line 22. Lines 30 through 35 are zero, so the tax shown is line 22. Schedule U is not built. Prior-year exceptions are not applied.</Description>
+      <Derived>
+        <All>
+          <GreaterThanOrEqual><Left><Dependency path="/wiLine43" /></Left><Right><Dependency path="/wiUnderpaymentFloor" /></Right></GreaterThanOrEqual>
+          <GreaterThan><Left><Dependency path="/wiLine43" /></Left><Right><Multiply><Dependency path="/wiLine22" /><Dependency path="/wiUnderpaymentRate" /></Multiply></Right></GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/wiMarriedCoupleAdjustments">
+      <Name>Joint return with deferred compensation this tool does not split</Name>
+      <Description>Married filing jointly, and a W-2 box 11 amount or a box 12 code H amount. Federal Schedule 1 lines 12, 16, 20, 24e, and 24g are not separate facts and cannot be nonzero here. The Wisconsin disability income exclusion is asked with the additions question. Box 11 also stops every return.</Description>
+      <Derived>
+        <All>
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          <Any>
+            <GreaterThan><Left><CollectionSum><Dependency module="formW2s" path="/formW2s/*/nonQualifiedPlans" /></CollectionSum></Left><Right><Dollar>0</Dollar></Right></GreaterThan>
+            <GreaterThan><Left><CollectionSum><Dependency module="formW2s" path="/formW2s/*/normalizedRounded501c18Deferrals" /></CollectionSum></Left><Right><Dollar>0</Dollar></Right></GreaterThan>
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiPartYearOrNonresident">
+      <Name>Flow knockout: part-year or nonresident</Name>
+      <Description>Form 1NPR is not calculated. Complete false when this is not a Wisconsin return. 2025 Form 1 instructions, filing requirements.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiResidencyIsOutOfScope" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiResidencyIsOutOfScope" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiResidencyIsOutOfScope" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiW2NotWisconsin">
+      <Name>Flow knockout: a W-2 box 15 is not Wisconsin</Name>
+      <Description>Any W-2 whose box 15 is a state other than Wisconsin. A blank box 15 is in scope and is not this stop. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" /></IsComplete></Not></When>
+            <Then><Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiOtherFederalIncome">
+      <Name>Flow knockout: income other than W-2 wages</Name>
+      <Description>Any federal income other than W-2 wages. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiHasOtherFederalIncome" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiHasOtherFederalIncome" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiHasOtherFederalIncome" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiDependents">
+      <Name>Flow knockout: dependents</Name>
+      <Description>A dependent exemption, the Wisconsin earned income credit, or Wisconsin Form 2441. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiHasDependents" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiHasDependents" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiHasDependents" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiAgeOrBlind">
+      <Name>Flow knockout: age 65 or blind</Name>
+      <Description>Line 10b and the federal additional standard deduction are not calculated. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiAgeOrBlind" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiAgeOrBlind" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiAgeOrBlind" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiClaimedAsDependent">
+      <Name>Flow knockout: filer can be claimed as a dependent</Name>
+      <Description>The standard deduction table is not used when the filer or spouse can be claimed. Complete false when this is not a Wisconsin return. 2025 Form 1 instructions, line 8.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiClaimedAsDependent" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiClaimedAsDependent" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiClaimedAsDependent" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiFilingStatus">
+      <Name>Flow knockout: filing status</Name>
+      <Description>Married filing separately and head of household are not calculated. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiFilingStatusUnsupported" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiFilingStatusUnsupported" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiFilingStatusUnsupported" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiItemizedDeductions">
+      <Name>Flow knockout: itemized deductions</Name>
+      <Description>Federal Schedule A. The itemized deduction credit is not calculated. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency module="scheduleA" path="/itemizesDeductions" /></IsComplete></Not></When>
+            <Then><Dependency module="scheduleA" path="/itemizesDeductions" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency module="scheduleA" path="/itemizesDeductions" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiSchedule1A">
+      <Name>Flow knockout: federal Schedule 1-A</Name>
+      <Description>Schedule 1-A line 44 is greater than zero. Wisconsin conformity for that deduction is not pinned. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><GreaterThan><Left><Dependency module="schedule1A" path="/schedule1ALine44" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan></IsComplete></Not></When>
+            <Then><GreaterThan><Left><Dependency module="schedule1A" path="/schedule1ALine44" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan></Then>
+          </Case>
+          <Case>
+            <When><GreaterThan><Left><Dependency module="schedule1A" path="/schedule1ALine44" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiAdditionsOrSubtractions">
+      <Name>Flow knockout: Wisconsin additions or subtractions</Name>
+      <Description>Schedule AD, Schedule SB, or Schedule I. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiHasAdditionsOrSubtractions" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiHasAdditionsOrSubtractions" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiHasAdditionsOrSubtractions" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiCredits">
+      <Name>Flow knockout: credits this tool does not calculate</Name>
+      <Description>School property tax credit, itemized deduction credit, homestead credit, veterans property tax credit, or Schedule CR. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiHasUnmodeledCredits" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiHasUnmodeledCredits" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiHasUnmodeledCredits" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiUseTax">
+      <Name>Flow knockout: use tax</Name>
+      <Description>Line 23 is not calculated. Complete false when this is not a Wisconsin return. 2025 Form 1, line 23.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiHasUseTax" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiHasUseTax" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiHasUseTax" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiTaxPaidOtherState">
+      <Name>Flow knockout: tax paid to another state</Name>
+      <Description>Line 20 is not calculated. Complete false when this is not a Wisconsin return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiHasTaxPaidOtherState" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiHasTaxPaidOtherState" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiHasTaxPaidOtherState" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiUnderpaymentInterest">
+      <Name>Flow knockout: underpayment interest</Name>
+      <Description>Line 43 is at least $500 and more than 10 percent of line 22. Schedule U is not built. Complete false when this is not a Wisconsin return. 2025 Form 1 instructions, page 33.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiUnderpaymentInterestDue" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiUnderpaymentInterestDue" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiUnderpaymentInterestDue" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWiMarriedCoupleAdjustments">
+      <Name>Flow knockout: joint deferred compensation</Name>
+      <Description>A joint return with W-2 box 11 or box 12 code H. Schedule 2 line 4 is not calculated. Complete false when this is not a Wisconsin return. 2025 Form 1, Schedule 2, line 4.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="stateReturn" path="/stateReturnIsWi" /></Not></When>
+            <Then><False /></Then>
+          </Case>
+          <Case>
+            <When><Not><IsComplete><Dependency path="/wiMarriedCoupleAdjustments" /></IsComplete></Not></When>
+            <Then><Dependency path="/wiMarriedCoupleAdjustments" /></Then>
+          </Case>
+          <Case>
+            <When><Dependency path="/wiMarriedCoupleAdjustments" /></When>
+            <Then><True /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><False /></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>
+

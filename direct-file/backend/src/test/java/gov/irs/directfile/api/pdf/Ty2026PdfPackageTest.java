@@ -204,7 +204,8 @@ class Ty2026PdfPackageTest {
             Map.entry("AZ140", "Arizona Form 140; these scenarios are not Arizona residents"),
             Map.entry("ID40", "Idaho Form 40; these scenarios are not Idaho residents"),
             Map.entry("KS40", "Kansas Form K-40; these scenarios are not Kansas residents"),
-            Map.entry("NMPIT1", "New Mexico Form PIT-1; these scenarios are not New Mexico residents"));
+            Map.entry("NMPIT1", "New Mexico Form PIT-1; these scenarios are not New Mexico residents"),
+            Map.entry("WI1", "Wisconsin Form 1; these scenarios are not Wisconsin residents"));
 
     static final ObjectMapper MAPPER = new ObjectMapper();
     static FactGraphService factGraphService;

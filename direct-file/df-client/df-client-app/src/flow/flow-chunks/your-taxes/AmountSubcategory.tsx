@@ -1007,6 +1007,129 @@ export const AmountSubcategory = (
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
+    {/* #93 slice 10: full-year Wisconsin resident, W-2 wages only. No local return. */}
+    <SubSubcategory route='wi-form-1'>
+      <Screen route='wi-residency' condition='/stateReturnIsWi'>
+        <Heading i18nKey='/heading/your-taxes/amount/wi-residency' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/wi-residency' />
+        <Enum path='/wiResidencyStatus' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='wi-part-year-knockout' condition='/flowKnockoutWiPartYearOrNonresident' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-part-year' />
+        <DFAlert i18nKey='/info/knockout/wi-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-w2-knockout' condition='/flowKnockoutWiW2NotWisconsin' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-w2' />
+        <DFAlert i18nKey='/info/knockout/wi-w2' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-other-income-knockout' condition='/flowKnockoutWiOtherFederalIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-other-income' />
+        <DFAlert i18nKey='/info/knockout/wi-other-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-dependents-knockout' condition='/flowKnockoutWiDependents' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-dependents' />
+        <DFAlert i18nKey='/info/knockout/wi-dependents' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-age-blind-knockout' condition='/flowKnockoutWiAgeOrBlind' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-age-blind' />
+        <DFAlert i18nKey='/info/knockout/wi-age-blind' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-claimed-knockout' condition='/flowKnockoutWiClaimedAsDependent' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-claimed' />
+        <DFAlert i18nKey='/info/knockout/wi-claimed' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-filing-status-knockout' condition='/flowKnockoutWiFilingStatus' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-filing-status' />
+        <DFAlert i18nKey='/info/knockout/wi-filing-status' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-itemized-knockout' condition='/flowKnockoutWiItemizedDeductions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-itemized' />
+        <DFAlert i18nKey='/info/knockout/wi-itemized' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-schedule-1a-knockout' condition='/flowKnockoutWiSchedule1A' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-schedule-1a' />
+        <DFAlert i18nKey='/info/knockout/wi-schedule-1a' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-additions' condition='/stateReturnIsWi'>
+        <Heading i18nKey='/heading/your-taxes/amount/wi-additions' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/wi-additions' />
+        <Boolean path='/wiHasAdditionsOrSubtractions' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='wi-additions-knockout' condition='/flowKnockoutWiAdditionsOrSubtractions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-additions' />
+        <DFAlert i18nKey='/info/knockout/wi-additions' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-credits' condition='/stateReturnIsWi'>
+        <Heading i18nKey='/heading/your-taxes/amount/wi-credits' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/wi-credits' />
+        <Boolean path='/wiHasUnmodeledCredits' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='wi-credits-knockout' condition='/flowKnockoutWiCredits' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-credits' />
+        <DFAlert i18nKey='/info/knockout/wi-credits' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-use-tax' condition='/stateReturnIsWi'>
+        <Heading i18nKey='/heading/your-taxes/amount/wi-use-tax' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/wi-use-tax' />
+        <Boolean path='/wiHasUseTax' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='wi-use-tax-knockout' condition='/flowKnockoutWiUseTax' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-use-tax' />
+        <DFAlert i18nKey='/info/knockout/wi-use-tax' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-other-state' condition='/stateReturnIsWi'>
+        <Heading i18nKey='/heading/your-taxes/amount/wi-other-state' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/wi-other-state' />
+        <Boolean path='/wiHasTaxPaidOtherState' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='wi-other-state-knockout' condition='/flowKnockoutWiTaxPaidOtherState' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-other-state' />
+        <DFAlert i18nKey='/info/knockout/wi-other-state' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-underpayment-knockout' condition='/flowKnockoutWiUnderpaymentInterest' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-underpayment' />
+        <DFAlert i18nKey='/info/knockout/wi-underpayment' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='wi-married-couple-knockout' condition='/flowKnockoutWiMarriedCoupleAdjustments' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/wi-married-couple' />
+        <DFAlert i18nKey='/info/knockout/wi-married-couple' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     {/* #77 Form 6251 cases this tool doesn't compute */}
     <Screen route='amt-mfs-add-back-knockout' condition='/flowKnockoutAmtMfsAddBack' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />

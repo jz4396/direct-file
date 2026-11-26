@@ -62,3 +62,4 @@ c6d8f5cdd63045e1e40b6deeced2c80b23006b7700befe3b8f0c430f2b40a0d4  pdf/2026/PA40B
 520555065fec4b85f757fa5cd2f3564c507464954553e376d1922bc7a75b8098  pdf/2026/PA40C/en/pa-40c.pdf  pages=8  mapped=58  unmapped=153
 cf8c6d0b819f90fa56993f0647895e7e4000e36e42607c36a6a89d9170d82a5b  pdf/2026/PA40SP/en/2025_pa-40sp.pdf  pages=8  mapped=55  unmapped=41
 945275e6be3cc7353a3faf165ddd7ccb79e3c8a43abe6678d4c47f8207594cb5  pdf/2026/SCHEDULE_R/en/f1040sr.pdf  pages=2  mapped=27  unmapped=0
+a9b0d9b75bcb55ec0e20984c28872a893765fea66e0f1edd9a7c47b60ceae14e  pdf/2026/WI1/en/2025_form-1.pdf  pages=5  mapped=104  unmapped=87

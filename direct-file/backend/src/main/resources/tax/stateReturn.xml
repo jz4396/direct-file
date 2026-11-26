@@ -15,6 +15,7 @@
       Idaho (#93 slice 7) is a computed return: /livedInId and /stateReturnIsId feed /stateReturnComputed and these Switches the same way. Form 40 has no local return.
       Kansas (#93 slice 8) is a computed return: /livedInKs and /stateReturnIsKs feed /stateReturnComputed and these Switches the same way. Form K-40 has no local return.
       New Mexico (#93 slice 9) is a computed return: /livedInNm and /stateReturnIsNm feed /stateReturnComputed and these Switches the same way. PIT-1 has no local return.
+      Wisconsin (#93 slice 10) is a computed return: /livedInWi and /stateReturnIsWi feed /stateReturnComputed and these Switches the same way. Form 1 has no local return. Wisconsin is already in /livesInCommunityPropertyState.
     -->
     <Fact path="/stateReturnIsPa">
       <Name>State return: Pennsylvania</Name>
@@ -124,6 +125,22 @@
             <Dependency module="filers" path="/filerResidenceAndIncomeState" />
           </IsComplete>
           <Dependency module="filers" path="/livedInNm" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsWi">
+      <Name>State return: Wisconsin</Name>
+      <Description>#93 slice 10: the filer chose Wisconsin as the one state they lived in and earned income in.
+        filers /livedInWi. Full-year W-2 wages are wiPit Form 1. Part-year, nonresident, and the other stops are
+        BlockSubmissionOnTrue facts on that module. No local return. Wisconsin is already in
+        /livesInCommunityPropertyState.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+          </IsComplete>
+          <Dependency module="filers" path="/livedInWi" />
         </All>
       </Derived>
     </Fact>
@@ -340,12 +357,13 @@
           <Dependency path="/stateReturnIsId" />
           <Dependency path="/stateReturnIsKs" />
           <Dependency path="/stateReturnIsNm" />
+          <Dependency path="/stateReturnIsWi" />
         </Any>
       </Derived>
     </Fact>
     <Fact path="/stateTaxLiability">
       <Name>stateTaxLiability</Name>
-      <Description>#78 state framework: State tax liability (PA-40 line 12, IL-1040 line 12, D-400 line 15, Form 140 line 46, Form 1 line 22, Form 40 line 20, or Form K-40 line 8). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax liability (PA-40 line 12, IL-1040 line 12, D-400 line 15, Form 140 line 46, Form 1 line 22, Form 40 line 20, Form K-40 line 8, or Wisconsin Form 1 line 22). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -413,12 +431,20 @@
               <Dependency module="nmPit" path="/nmPit1Line18" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsWi" />
+            </When>
+            <Then>
+              <Dependency module="wiPit" path="/wiLine22" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateTaxWithheld">
       <Name>stateTaxWithheld</Name>
-      <Description>#78 state framework: State tax withheld (PA-40 line 13, IL-1040 line 25, D-400 lines 20a and 20b, Form 140 line 53, Form 1 line 38, Form 40 line 46, or Form K-40 line 19). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax withheld (PA-40 line 13, IL-1040 line 25, D-400 lines 20a and 20b, Form 140 line 53, Form 1 line 38, Form 40 line 46, Form K-40 line 19, or Wisconsin Form 1 line 28). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -486,12 +512,20 @@
               <Dependency module="nmPit" path="/nmPit1Line27" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsWi" />
+            </When>
+            <Then>
+              <Dependency module="wiPit" path="/wiLine28" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateRefund">
       <Name>stateRefund</Name>
-      <Description>#78 state framework: State overpayment (PA-40 line 29, IL-1040 line 38, D-400 line 34, Form 140 refund, Form 1 line 54, Form 40 line 56, or Form K-40 line 43). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State overpayment (PA-40 line 29, IL-1040 line 38, D-400 line 34, Form 140 refund, Form 1 line 54, Form 40 line 56, Form K-40 line 43, or Wisconsin Form 1 line 41). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -559,12 +593,20 @@
               <Dependency module="nmPit" path="/nmPit1Line42" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsWi" />
+            </When>
+            <Then>
+              <Dependency module="wiPit" path="/wiLine41" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateAmountOwed">
       <Name>stateAmountOwed</Name>
-      <Description>#78 state framework: State tax due (PA-40 line 26, IL-1040 line 41, D-400 line 27, Form 140 amount owed, Form 1 line 55, Form 40 line 51, or Form K-40 line 32). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax due (PA-40 line 26, IL-1040 line 41, D-400 line 27, Form 140 amount owed, Form 1 line 55, Form 40 line 51, Form K-40 line 32, or Wisconsin Form 1 line 45). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -630,6 +672,14 @@
             </When>
             <Then>
               <Dependency module="nmPit" path="/nmPit1Line33" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsWi" />
+            </When>
+            <Then>
+              <Dependency module="wiPit" path="/wiLine45" />
             </Then>
           </Case>
         </Switch>
@@ -784,6 +834,26 @@
               <Dependency module="nmPit" path="/flowKnockoutNmLowAgi" />
               <Dependency module="nmPit" path="/flowKnockoutNmPitAdj" />
               <Dependency module="nmPit" path="/flowKnockoutNmCreditForTaxesPaid" />
+            </Any>
+          </All>
+          <All>
+            <Dependency path="/stateReturnIsWi" />
+            <Any>
+              <Dependency module="wiPit" path="/flowKnockoutWiPartYearOrNonresident" />
+              <Dependency module="wiPit" path="/flowKnockoutWiW2NotWisconsin" />
+              <Dependency module="wiPit" path="/flowKnockoutWiOtherFederalIncome" />
+              <Dependency module="wiPit" path="/flowKnockoutWiDependents" />
+              <Dependency module="wiPit" path="/flowKnockoutWiAgeOrBlind" />
+              <Dependency module="wiPit" path="/flowKnockoutWiClaimedAsDependent" />
+              <Dependency module="wiPit" path="/flowKnockoutWiFilingStatus" />
+              <Dependency module="wiPit" path="/flowKnockoutWiItemizedDeductions" />
+              <Dependency module="wiPit" path="/flowKnockoutWiSchedule1A" />
+              <Dependency module="wiPit" path="/flowKnockoutWiAdditionsOrSubtractions" />
+              <Dependency module="wiPit" path="/flowKnockoutWiCredits" />
+              <Dependency module="wiPit" path="/flowKnockoutWiUseTax" />
+              <Dependency module="wiPit" path="/flowKnockoutWiTaxPaidOtherState" />
+              <Dependency module="wiPit" path="/flowKnockoutWiUnderpaymentInterest" />
+              <Dependency module="wiPit" path="/flowKnockoutWiMarriedCoupleAdjustments" />
             </Any>
           </All>
         </Any>

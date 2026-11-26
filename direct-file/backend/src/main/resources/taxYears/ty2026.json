@@ -311,6 +311,20 @@
       "medium": "pdf",
       "kind": "priorYear",
       "sha256": "f5f53d534f065836b2fc277f53d7b1eb4eb4bb78518dcd4d1160eb9e544aea9a"
+    },
+    "wi-form-1-inst-2025": {
+      "title": "2025 Form 1 instructions, used for the 2026 return until the 2026 instructions are posted",
+      "url": "https://www.revenue.wi.gov/TaxForms2025/2025-Form1-Inst.pdf",
+      "medium": "pdf",
+      "kind": "priorYear",
+      "sha256": "dd7e88901ac4ec560aaa85024511a918656e2d90aaf7bcc10b37d615e505913c"
+    },
+    "wi-form-1-2025": {
+      "title": "2025 Form 1, used as the interim 2026 template until the 2026 form is posted",
+      "url": "https://www.revenue.wi.gov/TaxForms2025/2025-Form1f.pdf",
+      "medium": "pdf",
+      "kind": "priorYear",
+      "sha256": "a9b0d9b75bcb55ec0e20984c28872a893765fea66e0f1edd9a7c47b60ceae14e"
     }
   },
   "parameters": [
@@ -5600,6 +5614,766 @@
       "provisional": {
         "reason": "Every form or instruction cite is draft or priorYear: nm-trt-2025 (priorYear).",
         "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdSingleMax",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:13560"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "2025 Standard Deduction Table. If Wisconsin income on line 7 is at least $0 but less than $13,390, the single standard deduction is $13,560.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdMfjMax",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:25110"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "2025 Standard Deduction Table. If Wisconsin income on line 7 is at least $0 but less than $13,390, the married filing jointly standard deduction is $25,110.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdSinglePhaseStart",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:19550"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "The single standard deduction stays $13,560 until the band midpoint passes $19,550. $19,550 is the start of the formula that reproduces the 2025 Standard Deduction Table. It is not printed as its own line.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdMfjPhaseStart",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:28210"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "The married filing jointly standard deduction stays $25,110 until the band midpoint passes $28,210. $28,210 is the start of the formula that reproduces the 2025 Standard Deduction Table. It is not printed as its own line.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdSingleRate",
+      "file": "wiPit.xml",
+      "values": [
+        "Rational:12/100"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "The single standard deduction falls by 12% of the amount by which the band midpoint exceeds the phaseout start. 12% is the rate that reproduces every row of the 2025 Standard Deduction Table. The instructions do not print that rate as a line of the table.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdMfjRate",
+      "file": "wiPit.xml",
+      "values": [
+        "Rational:19778/100000"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "The married filing jointly standard deduction falls by 19.778% of the amount by which the band midpoint exceeds the phaseout start. That rate reproduces every row of the 2025 Standard Deduction Table. The instructions do not print it as a line of the table.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdFirstBand",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:13390"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "2025 Standard Deduction Table. The first row is at least $0 but less than $13,390.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdSecondBand",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:13500"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "2025 Standard Deduction Table. The second row is at least $13,390 but less than $13,500. Later rows are $500 wide.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdBandWidth",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:500"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 35,
+          "quote": "2025 Standard Deduction Table. After the $13,500 row, each row is $500 wide: at least $13,500 but less than $14,000, then at least $14,000 but less than $14,500.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdMfjLastLo",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:155000"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 37,
+          "quote": "2025 Standard Deduction Table. At least $155,000 but less than $155,169, the married filing jointly standard deduction is $17.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiStdMfjLastHi",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:155169"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 37,
+          "quote": "2025 Standard Deduction Table. $155,169 or more, the standard deduction is $0.",
+          "section": "Standard Deduction Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiExemption",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:700"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 15,
+          "quote": "Multiply that number by the amount indicated ($700 or $250), and fill in the result on line a or b, as appropriate.",
+          "section": "Line 10 Exemptions"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiTaxTableLimit",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:100000"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 38,
+          "quote": "Use this Tax Table if your taxable income is less than $100,000. If $100,000 or more, use the Tax Computation Worksheet on page 44.",
+          "section": "Tax Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiTableBand20",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:20"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 38,
+          "quote": "Tax table rows are at least / but less than. The first rows are at least $0 but less than $20, at least $20 but less than $40, and at least $40 but less than $100.",
+          "section": "Tax Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiTableBand40",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:40"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 38,
+          "quote": "Tax table rows are at least / but less than. The first rows are at least $0 but less than $20, at least $20 but less than $40, and at least $40 but less than $100.",
+          "section": "Tax Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiTableBand100",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:100"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 38,
+          "quote": "Tax table rows are at least / but less than. The first rows are at least $0 but less than $20, at least $20 but less than $40, and at least $40 but less than $100. Later rows are $100 wide.",
+          "section": "Tax Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiRate35",
+      "file": "wiPit.xml",
+      "values": [
+        "Rational:35/1000"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "The tax computation worksheet uses 5.3% (.053) and 7.65% (.0765). The 3.5% bracket below those rows is the rate that reproduces the tax table. Wis. Stat. section 71.06.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiRate44",
+      "file": "wiPit.xml",
+      "values": [
+        "Rational:44/1000"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "The tax computation worksheet uses 5.3% (.053) and 7.65% (.0765). The 4.4% bracket between the first bracket and the worksheet is the rate that reproduces the tax table. Wis. Stat. section 71.06.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiRate53",
+      "file": "wiPit.xml",
+      "values": [
+        "Rational:53/1000"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Multiplication amount 5.3% (.053). Subtract the subtraction amount and fill in the result on Form 1, line 12.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiRate765",
+      "file": "wiPit.xml",
+      "values": [
+        "Rational:765/10000"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Multiplication amount 7.65% (.0765). Subtract the subtraction amount and fill in the result on Form 1, line 12.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiSingleLimit35",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:14680"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "The single 3.5% bracket ends at $14,680. $14,680 is the floor that makes the page 44 worksheet and the tax table the same tax. It is not printed as its own line.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiSingleLimit44",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:50480"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "The single 4.4% bracket ends at $50,480. $50,480 is the floor that makes the page 44 worksheet and the tax table the same tax. It is not printed as its own line.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiSingleLimit765",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:323290"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "At least $100,000 but less than $323,290. $323,290 or over.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiMfjLimit35",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:19580"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "The married filing jointly 3.5% bracket ends at $19,580. $19,580 is the floor that makes the page 44 worksheet and the tax table the same tax. It is not printed as its own line.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiMfjLimit44",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:67300"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 42,
+          "quote": "Tax table row at least $67,300. $67,300 is the top of the 4.4% married filing jointly bracket. The page 44 worksheet matches the tax table at that floor.",
+          "section": "Tax Table"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiMfjLimit765",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:431060"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Married filing jointly. At least $100,000 but less than $431,060. $431,060 or over.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiSingleBase44",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:513.80"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "3.5% of the $14,680 single bracket floor is $513.80. That base is not printed. The tax table and the worksheet both match it.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiSingleBase53",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:2089"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Tax at the top of the single 4.4% bracket is $2,089. That base is not printed. The tax table and the worksheet both match it.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiMfjBase44",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:685.30"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "3.5% of the $19,580 married filing jointly bracket floor is $685.30. That base is not printed. The tax table and the worksheet both match it.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiMfjBase53",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:2784.98"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Tax at the top of the married filing jointly 4.4% bracket is $2,784.98. That base is not printed. The tax table and the worksheet both match it.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiWsSingleSub53",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:586.44"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Single. At least $100,000 but less than $323,290. Multiplication amount 5.3% (.053). Subtraction amount $586.44.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiWsSingleSub765",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:8183.76"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Single. $323,290 or over. Multiplication amount 7.65% (.0765). Subtraction amount $8,183.76.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiWsMfjSub53",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:781.92"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Married filing jointly. At least $100,000 but less than $431,060. Multiplication amount 5.3% (.053). Subtraction amount $781.92.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiWsMfjSub765",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:10911.83"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 44,
+          "quote": "Married filing jointly. $431,060 or over. Multiplication amount 7.65% (.0765). Subtraction amount $10,911.83.",
+          "section": "Tax Computation Worksheet"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiMccRate",
+      "file": "wiPit.xml",
+      "values": [
+        "Rational:3/100"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-2025",
+          "page": 4,
+          "quote": "Rate of credit is .03 (3%). Multiply line 6 by line 7. Fill in here and on line 18.",
+          "section": "Schedule 2 Married Couple Credit"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiMccWageCap",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:16000"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-2025",
+          "page": 4,
+          "quote": "Compare the amounts in columns (A) and (B) of line 5. Fill in the smaller amount here. If more than $16,000, fill in $16,000. Do not fill in more than $480.",
+          "section": "Schedule 2 Married Couple Credit"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiUnderpaymentFloor",
+      "file": "wiPit.xml",
+      "values": [
+        "Dollar:500"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 33,
+          "quote": "You owe underpayment interest if one of the following applies: Line 43 is at least $500 and it is more than 10% of the tax shown on your return.",
+          "section": "Underpayment interest"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/wiUnderpaymentRate",
+      "file": "wiPit.xml",
+      "values": [
+        "Rational:10/100"
+      ],
+      "cite": [
+        {
+          "source": "wi-form-1-inst-2025",
+          "page": 33,
+          "quote": "Line 43 is at least $500 and it is more than 10% of the tax shown on your return. The tax shown on your return is the amount on line 22 minus the amounts on lines 30 through 35.",
+          "section": "Underpayment interest"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: wi-form-1-inst-2025 (priorYear).",
+        "repinFrom": "2026 Wisconsin Form 1 and instructions",
         "tracking": "#91"
       }
     }
