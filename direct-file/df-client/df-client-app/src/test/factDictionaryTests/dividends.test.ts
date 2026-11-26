@@ -2248,7 +2248,6 @@ describe(`1099-DIV box 8 and boxes 14-16 (#86)`, () => {
     const phrase = `a state return computed here (\`/stateReturnComputed\`)`;
     const sources = [
       resolve(here, `../../fact-dictionary/generate-src/xml-src/dividends.xml`),
-      resolve(here, `../../locales/en.dividends.yaml`),
       resolve(here, `../../../../../backend/src/main/java/gov/irs/directfile/api/pdf/PrintRefusingKnockouts.java`),
       resolve(here, `../../../../../backend/src/test/java/gov/irs/directfile/api/pdf/PrintRefusingKnockoutsTest.java`),
     ];
@@ -2257,9 +2256,17 @@ describe(`1099-DIV box 8 and boxes 14-16 (#86)`, () => {
     }
     const en = readFileSync(resolve(here, `../../locales/en.dividends.yaml`), `utf8`);
     const es = readFileSync(resolve(here, `../../locales/es.dividends.yaml`), `utf8`);
-    expect(en).not.toContain(`Massachusetts, or Idaho return, box 16`);
-    expect(en).not.toContain(`Massachusetts, or Idaho return, an amount in box 16`);
-    expect(es).toContain(`calculada aquí (\`/stateReturnComputed\`)`);
-    expect(es).not.toContain(`Massachusetts o Idaho, el`);
+    expect(en).toContain(
+      `When this tool computes your state return, an amount in box 16 has to equal box 1a plus box 2a.`
+    );
+    expect(en).toContain(`When this tool computes your state return, box 16 has to equal box 1a plus box 2a.`);
+    expect(en).toContain(`computes your state return, when you live in Alaska`);
+    expect(en).not.toContain(`/stateReturnComputed`);
+    expect(en).not.toContain(`Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho`);
+    expect(es).toContain(`calcula su declaración estatal, una cantidad en el encasillado 16`);
+    expect(es).toContain(`Cuando esta herramienta calcula su declaración estatal, el encasillado 16`);
+    expect(es).toContain(`cuando esta herramienta calcula su declaración estatal, cuando usted vive en`);
+    expect(es).not.toContain(`/stateReturnComputed`);
+    expect(es).not.toContain(`Pensilvania, Illinois`);
   });
 });

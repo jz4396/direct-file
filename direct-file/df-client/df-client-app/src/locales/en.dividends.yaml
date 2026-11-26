@@ -173,8 +173,8 @@ info:
           this tool computes your state return, when your state has no income tax, or when box 15 is a different state.
           Box 14 is not added for you. If you itemize, include it with the state and local income taxes you enter on
           Schedule A. Box 15 is the state and the payer’s state identification number. Box 16 is the state distribution.
-          On a state return computed here (`/stateReturnComputed`), an amount in box 16 has to equal box 1a plus box 2a.
-          Leave a box blank if it’s empty on your form.
+          When this tool computes your state return, an amount in box 16 has to equal box 1a plus box 2a. Leave a box
+          blank if it’s empty on your form.
   /info/income/dividends/box-12:
     body:
       - p:
@@ -280,15 +280,15 @@ info:
       body:
         - p:
             This tool doesn’t support an amount in box 2c. State tax withheld in box 14 stops this return when this tool
-            computes your state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho), when
-            you live in Alaska, Florida, Nevada, South Dakota, Texas, Wyoming, Washington, Tennessee, or New Hampshire,
-            or when box 15 is a different state. You’ll need another way to file this return.
+            computes your state return, when you live in Alaska, Florida, Nevada, South Dakota, Texas, Wyoming,
+            Washington, Tennessee, or New Hampshire, or when box 15 is a different state. You’ll need another way to
+            file this return.
   /info/knockout/dividends-state-distribution:
     alertText:
       body:
         - p:
-            On a state return computed here (`/stateReturnComputed`), box 16 has to equal box 1a plus box 2a. That state
-            return uses the federal amounts. You’ll need another way to file this return.
+            When this tool computes your state return, box 16 has to equal box 1a plus box 2a. That state return uses
+            the federal amounts. You’ll need another way to file this return.
   /info/knockout/dividends-collectibles-with-loss:
     alertText:
       body:

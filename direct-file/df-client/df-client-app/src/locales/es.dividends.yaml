@@ -195,9 +195,9 @@ info:
           calcula su declaración estatal, cuando su estado no tiene impuesto sobre el ingreso, o cuando el encasillado
           15 es un estado distinto. El encasillado 14 no se suma por usted. Si detalla, inclúyalo con los impuestos
           estatales y locales sobre el ingreso que anota en el Anexo A. El encasillado 15 es el estado y el número de
-          identificación estatal del pagador. El encasillado 16 es la distribución estatal. En una declaración estatal
-          calculada aquí (`/stateReturnComputed`), una cantidad en el encasillado 16 tiene que ser igual al encasillado
-          1a más el encasillado 2a. Deje un encasillado en blanco si está vacío en su formulario.
+          identificación estatal del pagador. El encasillado 16 es la distribución estatal. Cuando esta herramienta
+          calcula su declaración estatal, una cantidad en el encasillado 16 tiene que ser igual al encasillado 1a más el
+          encasillado 2a. Deje un encasillado en blanco si está vacío en su formulario.
   /info/income/dividends/box-12:
     body:
       - p:
@@ -312,17 +312,16 @@ info:
       body:
         - p:
             Esta herramienta no admite una cantidad en el encasillado 2c. El impuesto estatal retenido en el encasillado
-            14 detiene esta declaración cuando esta herramienta calcula su declaración estatal (Pensilvania, Illinois,
-            Carolina del Norte, Arizona, Massachusetts o Idaho), cuando usted vive en Alaska, Florida, Nevada, Dakota
-            del Sur, Texas, Wyoming, Washington, Tennessee o Nuevo Hampshire, o cuando el encasillado 15 es un estado
-            distinto. Necesitará otra manera de presentar esta declaración.
+            14 detiene esta declaración cuando esta herramienta calcula su declaración estatal, cuando usted vive en
+            Alaska, Florida, Nevada, Dakota del Sur, Texas, Wyoming, Washington, Tennessee o Nuevo Hampshire, o cuando
+            el encasillado 15 es un estado distinto. Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-state-distribution:
     alertText:
       body:
         - p:
-            En una declaración estatal calculada aquí (`/stateReturnComputed`), el encasillado 16 tiene que ser igual al
-            encasillado 1a más el encasillado 2a. Esa declaración estatal usa las cantidades federales. Necesitará otra
-            manera de presentar esta declaración.
+            Cuando esta herramienta calcula su declaración estatal, el encasillado 16 tiene que ser igual al encasillado
+            1a más el encasillado 2a. Esa declaración estatal usa las cantidades federales. Necesitará otra manera de
+            presentar esta declaración.
   /info/knockout/dividends-collectibles-with-loss:
     alertText:
       body:
