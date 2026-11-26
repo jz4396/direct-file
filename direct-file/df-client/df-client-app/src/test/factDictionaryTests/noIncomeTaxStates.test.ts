@@ -163,7 +163,7 @@ const longTermSale = (proceeds: string) => ({
   '/form8949Transactions': createCollectionWrapper([saleId]),
   [`/form8949Transactions/#${saleId}/description`]: createStringWrapper(`100 sh Example Index Fund`),
   [`/form8949Transactions/#${saleId}/dateAcquired`]: createDayWrapper(`2020-01-15`),
-  [`/form8949Transactions/#${saleId}/dateAcquiredIsVariousOrInherited`]: createBooleanWrapper(false),
+  [`/form8949Transactions/#${saleId}/dateAcquiredKind`]: createEnumWrapper(`date`, `/form8949DateAcquiredKindOptions`),
   [`/form8949Transactions/#${saleId}/dateSold`]: createDayWrapper(`2026-06-01`),
   [`/form8949Transactions/#${saleId}/proceeds`]: createDollarWrapper(proceeds),
   [`/form8949Transactions/#${saleId}/costBasis`]: createDollarWrapper(`0.00`),
