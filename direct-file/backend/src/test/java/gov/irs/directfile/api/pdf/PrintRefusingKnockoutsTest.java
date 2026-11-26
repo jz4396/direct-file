@@ -312,6 +312,21 @@ class PrintRefusingKnockoutsTest {
                 "/flowKnockoutNmLowAgi",
                 "/flowKnockoutNmPitAdj",
                 "/flowKnockoutNmCreditForTaxesPaid",
+                "/flowKnockoutWiPartYearOrNonresident",
+                "/flowKnockoutWiW2NotWisconsin",
+                "/flowKnockoutWiOtherFederalIncome",
+                "/flowKnockoutWiDependents",
+                "/flowKnockoutWiAgeOrBlind",
+                "/flowKnockoutWiClaimedAsDependent",
+                "/flowKnockoutWiFilingStatus",
+                "/flowKnockoutWiItemizedDeductions",
+                "/flowKnockoutWiSchedule1A",
+                "/flowKnockoutWiAdditionsOrSubtractions",
+                "/flowKnockoutWiCredits",
+                "/flowKnockoutWiUseTax",
+                "/flowKnockoutWiTaxPaidOtherState",
+                "/flowKnockoutWiUnderpaymentInterest",
+                "/flowKnockoutWiMarriedCoupleAdjustments",
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
@@ -372,8 +387,9 @@ class PrintRefusingKnockoutsTest {
         // #93 slice 9 adds the twelve New Mexico stops. 139 plus 12 is 151.
         // Schedule E continuation sheets replace the four-row and two-row stops with the 20-row and 10-row
         // stops. 151 minus 2 plus 2 is 151.
+        // #93 slice 10 adds the fifteen Wisconsin stops. 151 plus 15 is 166.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(151, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(166, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(

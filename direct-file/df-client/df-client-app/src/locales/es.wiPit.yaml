@@ -1,0 +1,98 @@
+# Cadenas del Formulario 1 de Wisconsin (#93, parte 10). El archivo se combina en locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    wi-form-1: Declaración de Wisconsin
+dataviews:
+  /flow/your-taxes/amount:
+    /wiResidencyStatus: Dónde vivió para su declaración de Wisconsin
+    /wiHasAdditionsOrSubtractions: Sumas o restas de Wisconsin
+    /wiHasUnmodeledCredits: Créditos de Wisconsin
+    /wiHasUseTax: Impuesto de uso de Wisconsin
+    /wiHasTaxPaidOtherState: Impuesto pagado a otro estado
+fields:
+  /wiResidencyOptions:
+    fullYear: Viví en Wisconsin todo el año
+    partYear: Viví en Wisconsin parte del año
+    nonresident: No viví en Wisconsin
+headings:
+  /heading/your-taxes/amount/wi-residency: ¿Cuál de estas opciones describe su declaración de Wisconsin?
+  /heading/your-taxes/amount/wi-additions: ¿Tiene una suma o una resta de Wisconsin?
+  /heading/your-taxes/amount/wi-credits: ¿Reclama un crédito de Wisconsin que esta herramienta no calcula?
+  /heading/your-taxes/amount/wi-use-tax: ¿Debe impuesto de uso de Wisconsin por compras fuera del estado?
+  /heading/your-taxes/amount/wi-other-state: ¿Otro estado gravó ingresos que Wisconsin también grava?
+  /heading/knockout/wi-part-year: Esta herramienta todavía no admite una declaración de Wisconsin de residente parcial o de no residente
+  /heading/knockout/wi-w2: Esta herramienta todavía no admite un W-2 de un estado que no sea Wisconsin
+  /heading/knockout/wi-other-income: Esta herramienta todavía no admite declaraciones de Wisconsin con ingresos que no sean salarios del W-2
+  /heading/knockout/wi-dependents: Esta herramienta todavía no admite dependientes en una declaración de Wisconsin
+  /heading/knockout/wi-age-blind: Esta herramienta todavía no admite una declaración de Wisconsin de una persona de 65 años o más, o ciega
+  /heading/knockout/wi-claimed: Esta herramienta todavía no admite una declaración de Wisconsin de una persona que puede ser reclamada como dependiente
+  /heading/knockout/wi-filing-status: Esta herramienta todavía no admite este estado civil para Wisconsin
+  /heading/knockout/wi-itemized: Esta herramienta todavía no admite declaraciones de Wisconsin que detallan deducciones
+  /heading/knockout/wi-schedule-1a: Esta herramienta todavía no admite una deducción del Anexo 1-A federal en una declaración de Wisconsin
+  /heading/knockout/wi-additions: Esta herramienta todavía no admite sumas o restas de Wisconsin
+  /heading/knockout/wi-credits: Esta herramienta todavía no admite estos créditos de Wisconsin
+  /heading/knockout/wi-use-tax: Esta herramienta todavía no admite el impuesto de uso de Wisconsin
+  /heading/knockout/wi-other-state: Esta herramienta todavía no admite el impuesto pagado a otro estado
+  /heading/knockout/wi-underpayment: Esta herramienta todavía no admite los intereses por pago insuficiente de Wisconsin
+  /heading/knockout/wi-married-couple: Esta herramienta todavía no admite esta declaración conjunta de Wisconsin
+info:
+  /info/your-taxes/amount/wi-residency:
+    body:
+      Un año completo significa que usted, y su cónyuge si presenta en conjunto, vivió en Wisconsin todo el año. Esa es la Forma 1. Las declaraciones de residente parcial y de no residente usan la Forma 1NPR.
+  /info/your-taxes/amount/wi-additions:
+    body:
+      Conteste sí si tiene una suma o una resta de Wisconsin. Eso incluye seguro médico o de cuidado a largo plazo, matrícula, matrícula de escuela privada, un aporte a Edvest, Tomorrow’s Scholar o ABLE, paga de servicio activo de las fuerzas armadas, y cualquier otra suma o resta de Wisconsin.
+  /info/your-taxes/amount/wi-credits:
+    body:
+      Conteste sí si reclama el crédito del impuesto escolar para inquilinos o propietarios, el crédito por deducciones detalladas, el crédito de vivienda, el crédito del impuesto sobre la propiedad para veteranos, o un crédito del Anexo CR.
+  /info/your-taxes/amount/wi-use-tax:
+    body:
+      Conteste sí si debe impuesto sobre ventas o de uso por compras por internet, por correo u otras compras fuera del estado. Conteste no si certifica que no debe impuesto sobre ventas ni de uso.
+  /info/your-taxes/amount/wi-other-state:
+    body:
+      Conteste sí si otro estado gravó ingresos que Wisconsin también grava. La retención por sí sola no es este crédito.
+  /info/knockout/wi-part-year:
+    alertText: Las declaraciones de Wisconsin de residente parcial y de no residente todavía no están admitidas
+    body: Esas declaraciones usan la Forma 1NPR, que esta herramienta no calcula.
+  /info/knockout/wi-w2:
+    alertText: Un W-2 de otro estado no está admitido en esta declaración de Wisconsin
+    body: La casilla 15 tiene que ser Wisconsin, o estar en blanco. La retención cuenta solo cuando la casilla 15 es Wisconsin.
+  /info/knockout/wi-other-income:
+    alertText: Esta declaración de Wisconsin solo puede incluir salarios del W-2
+    body: Intereses, Seguro Social, una venta, jubilación, negocio, alquiler y otros ingresos no están admitidos.
+  /info/knockout/wi-dependents:
+    alertText: Los dependientes no están admitidos en esta declaración de Wisconsin
+    body: La exención adicional, el crédito por ingreso del trabajo de Wisconsin y el crédito por cuidado de hijos y dependientes no se calculan.
+  /info/knockout/wi-age-blind:
+    alertText: Tener 65 años o más, o ser ciego, no está admitido en esta declaración de Wisconsin
+    body: La exención adicional y la deducción estándar federal adicional no se calculan.
+  /info/knockout/wi-claimed:
+    alertText: Ser reclamado como dependiente no está admitido en esta declaración de Wisconsin
+    body: La tabla de la deducción estándar no se usa cuando usted, o su cónyuge, puede ser reclamado como dependiente.
+  /info/knockout/wi-filing-status:
+    alertText: Este estado civil todavía no está admitido en una declaración de Wisconsin
+    body: Esta herramienta prepara la Forma 1 para personas solteras y para una declaración conjunta cuando ambos cónyuges vivieron en Wisconsin todo el año.
+  /info/knockout/wi-itemized:
+    alertText: Las deducciones detalladas no están admitidas en esta declaración de Wisconsin
+    body: El crédito por deducciones detalladas no se calcula.
+  /info/knockout/wi-schedule-1a:
+    alertText: Una deducción del Anexo 1-A federal no está admitida en esta declaración de Wisconsin
+    body: Las horas extra calificadas, las propinas, el interés de un préstamo de auto y la deducción para personas mayores no se anotan. La conformidad de Wisconsin con esa deducción no está fijada.
+  /info/knockout/wi-additions:
+    alertText: Las sumas y restas de Wisconsin todavía no están admitidas
+    body: Los Anexos AD, SB e I no se calculan.
+  /info/knockout/wi-credits:
+    alertText: Estos créditos de Wisconsin todavía no están admitidos
+    body: El crédito del impuesto escolar, el crédito por deducciones detalladas, el crédito de vivienda, el crédito del impuesto sobre la propiedad para veteranos y el Anexo CR no se calculan.
+  /info/knockout/wi-use-tax:
+    alertText: El impuesto de uso de Wisconsin todavía no está admitido
+    body: El impuesto de uso por compras fuera del estado no se calcula.
+  /info/knockout/wi-other-state:
+    alertText: El impuesto pagado a otro estado todavía no está admitido
+    body: El crédito por el impuesto neto pagado a otro estado no se calcula.
+  /info/knockout/wi-underpayment:
+    alertText: Los intereses por pago insuficiente de Wisconsin todavía no están admitidos
+    body: La cantidad que debe es de al menos $500 y es más del 10 por ciento de su impuesto de Wisconsin. El Anexo U no se calcula.
+  /info/knockout/wi-married-couple:
+    alertText: Esta declaración conjunta de Wisconsin todavía no está admitida
+    body: La compensación diferida de una declaración conjunta no se reparte para el crédito del matrimonio.

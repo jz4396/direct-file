@@ -1,0 +1,98 @@
+# Wisconsin Form 1 strings (#93 slice 10). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    wi-form-1: Wisconsin return
+dataviews:
+  /flow/your-taxes/amount:
+    /wiResidencyStatus: Where you lived for your Wisconsin return
+    /wiHasAdditionsOrSubtractions: Wisconsin additions or subtractions
+    /wiHasUnmodeledCredits: Wisconsin credits
+    /wiHasUseTax: Wisconsin use tax
+    /wiHasTaxPaidOtherState: Tax paid to another state
+fields:
+  /wiResidencyOptions:
+    fullYear: I lived in Wisconsin all year
+    partYear: I lived in Wisconsin for part of the year
+    nonresident: I did not live in Wisconsin
+headings:
+  /heading/your-taxes/amount/wi-residency: Which of these describes your Wisconsin return?
+  /heading/your-taxes/amount/wi-additions: Do you have a Wisconsin addition or subtraction?
+  /heading/your-taxes/amount/wi-credits: Do you claim a Wisconsin credit this tool does not calculate?
+  /heading/your-taxes/amount/wi-use-tax: Do you owe Wisconsin use tax on out-of-state purchases?
+  /heading/your-taxes/amount/wi-other-state: Did another state tax income that Wisconsin also taxes?
+  /heading/knockout/wi-part-year: This tool doesn’t yet support a Wisconsin part-year or nonresident return
+  /heading/knockout/wi-w2: This tool doesn’t yet support a W-2 from a state other than Wisconsin
+  /heading/knockout/wi-other-income: This tool doesn’t yet support Wisconsin returns with income other than W-2 wages
+  /heading/knockout/wi-dependents: This tool doesn’t yet support dependents on a Wisconsin return
+  /heading/knockout/wi-age-blind: This tool doesn’t yet support a Wisconsin return for someone who is 65 or older or blind
+  /heading/knockout/wi-claimed: This tool doesn’t yet support a Wisconsin return for someone who can be claimed as a dependent
+  /heading/knockout/wi-filing-status: This tool doesn’t yet support this Wisconsin filing status
+  /heading/knockout/wi-itemized: This tool doesn’t yet support Wisconsin returns that itemize
+  /heading/knockout/wi-schedule-1a: This tool doesn’t yet support a federal Schedule 1-A deduction on a Wisconsin return
+  /heading/knockout/wi-additions: This tool doesn’t yet support Wisconsin additions or subtractions
+  /heading/knockout/wi-credits: This tool doesn’t yet support these Wisconsin credits
+  /heading/knockout/wi-use-tax: This tool doesn’t yet support Wisconsin use tax
+  /heading/knockout/wi-other-state: This tool doesn’t yet support tax paid to another state
+  /heading/knockout/wi-underpayment: This tool doesn’t yet support Wisconsin underpayment interest
+  /heading/knockout/wi-married-couple: This tool doesn’t yet support this joint Wisconsin return
+info:
+  /info/your-taxes/amount/wi-residency:
+    body:
+      A full year means you, and your spouse if you file jointly, lived in Wisconsin all year. That is Form 1. Part-year and nonresident returns use Form 1NPR.
+  /info/your-taxes/amount/wi-additions:
+    body:
+      Answer yes if you have a Wisconsin addition or subtraction. That includes medical or long-term care insurance, tuition, private-school tuition, an Edvest, Tomorrow’s Scholar, or ABLE contribution, armed forces active-duty pay, and any other Wisconsin addition or subtraction.
+  /info/your-taxes/amount/wi-credits:
+    body:
+      Answer yes if you claim the renter’s or homeowner’s school property tax credit, the itemized deduction credit, the homestead credit, the veterans property tax credit, or a credit from Schedule CR.
+  /info/your-taxes/amount/wi-use-tax:
+    body:
+      Answer yes if you owe sales or use tax on internet, mail order, or other out-of-state purchases. Answer no if you certify that no sales or use tax is due.
+  /info/your-taxes/amount/wi-other-state:
+    body:
+      Answer yes if another state taxed income that Wisconsin also taxes. Withholding alone is not this credit.
+  /info/knockout/wi-part-year:
+    alertText: Wisconsin part-year and nonresident returns are not supported yet
+    body: Those returns use Form 1NPR, which this tool does not calculate.
+  /info/knockout/wi-w2:
+    alertText: A W-2 from another state is not supported on this Wisconsin return
+    body: Box 15 has to be Wisconsin, or blank. Withholding counts only when box 15 is Wisconsin.
+  /info/knockout/wi-other-income:
+    alertText: This Wisconsin return can include W-2 wages only
+    body: Interest, Social Security, a sale, retirement, business, rental, and other income are not supported.
+  /info/knockout/wi-dependents:
+    alertText: Dependents are not supported on this Wisconsin return
+    body: The extra exemption, the Wisconsin earned income credit, and the child and dependent care credit are not calculated.
+  /info/knockout/wi-age-blind:
+    alertText: Age 65 or blindness is not supported on this Wisconsin return
+    body: The additional exemption and the federal additional standard deduction are not calculated.
+  /info/knockout/wi-claimed:
+    alertText: Being claimed as a dependent is not supported on this Wisconsin return
+    body: The standard deduction table is not used when you, or your spouse, can be claimed as a dependent.
+  /info/knockout/wi-filing-status:
+    alertText: This filing status is not supported on a Wisconsin return yet
+    body: This tool prepares Form 1 for single filers and for a joint return when both spouses lived in Wisconsin all year.
+  /info/knockout/wi-itemized:
+    alertText: Itemized deductions are not supported on this Wisconsin return
+    body: The itemized deduction credit is not calculated.
+  /info/knockout/wi-schedule-1a:
+    alertText: A federal Schedule 1-A deduction is not supported on this Wisconsin return
+    body: Qualified overtime, tips, car-loan interest, and the senior deduction are not entered. Wisconsin conformity for that deduction is not pinned.
+  /info/knockout/wi-additions:
+    alertText: Wisconsin additions and subtractions are not supported yet
+    body: Schedules AD, SB, and I are not calculated.
+  /info/knockout/wi-credits:
+    alertText: These Wisconsin credits are not supported yet
+    body: The school property tax credit, the itemized deduction credit, the homestead credit, the veterans property tax credit, and Schedule CR are not calculated.
+  /info/knockout/wi-use-tax:
+    alertText: Wisconsin use tax is not supported yet
+    body: Use tax on out-of-state purchases is not calculated.
+  /info/knockout/wi-other-state:
+    alertText: Tax paid to another state is not supported yet
+    body: The credit for net income tax paid to another state is not calculated.
+  /info/knockout/wi-underpayment:
+    alertText: Wisconsin underpayment interest is not supported yet
+    body: The amount you owe is at least $500 and more than 10 percent of your Wisconsin tax. Schedule U is not calculated.
+  /info/knockout/wi-married-couple:
+    alertText: This joint Wisconsin return is not supported yet
+    body: Deferred compensation on a joint return is not split for the married couple credit.

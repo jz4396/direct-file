@@ -568,6 +568,14 @@ direct-file:
         configuration-location: pdf/2026/NMPIT1/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: WI1
+        year: 2026
+        language-code: en
+        location: pdf/2026/WI1/en/2025_form-1.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/WI1/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: DF1099R
         year: 2026
         language-code: es

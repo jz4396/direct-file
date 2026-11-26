@@ -233,6 +233,27 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutNmLowAgi",
             "/flowKnockoutNmPitAdj",
             "/flowKnockoutNmCreditForTaxesPaid",
+            // #93 slice 10: Wisconsin stops. Each is complete false when the return is not a Form 1, and incomplete
+            // when the Wisconsin question is unanswered, so the PDF is not printed with the unmodeled line as zero.
+            // Derived stops are complete false when the condition is false. 2025 Form 1 is the interim template until
+            // the 2026 form is posted. Wis. Stat. §§ 71.05, 71.06, and 71.07. Line 8 phases out from the band
+            // midpoint. Line 12 uses the tax table midpoint below $100,000 and the page 44 worksheet at $100,000
+            // or more. Line 18 is 3 percent of the lower earner's wages, capped at $16,000 of wages.
+            "/flowKnockoutWiPartYearOrNonresident",
+            "/flowKnockoutWiW2NotWisconsin",
+            "/flowKnockoutWiOtherFederalIncome",
+            "/flowKnockoutWiDependents",
+            "/flowKnockoutWiAgeOrBlind",
+            "/flowKnockoutWiClaimedAsDependent",
+            "/flowKnockoutWiFilingStatus",
+            "/flowKnockoutWiItemizedDeductions",
+            "/flowKnockoutWiSchedule1A",
+            "/flowKnockoutWiAdditionsOrSubtractions",
+            "/flowKnockoutWiCredits",
+            "/flowKnockoutWiUseTax",
+            "/flowKnockoutWiTaxPaidOtherState",
+            "/flowKnockoutWiUnderpaymentInterest",
+            "/flowKnockoutWiMarriedCoupleAdjustments",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.

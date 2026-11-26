@@ -150,6 +150,38 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `half-up guard: multiply the cent-then-dollar round by 100, and subtract $1 only when that exceeds the exact product by more than 50 cents. An exact half dollar stays the half-up dollar. Refs #93.`,
   },
+  '/wiStdMidpoint': {
+    kind: `structural`,
+    reason: `Standard deduction row midpoint. Half an edge, the average of an odd row, or $250 above the $500 boundary. The row is at least lo and less than hi. Refs #93.`,
+  },
+  '/wiStdTimes100': {
+    kind: `structural`,
+    reason: `100 times the capped standard deduction before the dollar round. Refs #93.`,
+  },
+  '/wiStdRounded': {
+    kind: `structural`,
+    reason: `half-up guard for Form 1 line 8. Subtract $1 only when the cent-then-dollar round exceeds the exact product by more than 50 cents. Refs #93.`,
+  },
+  '/wiTaxMidpoint': {
+    kind: `structural`,
+    reason: `Tax table row midpoint. Below $20 the midpoint is $10, below $40 it is $30, below $100 it is $70, and a later row adds $50 to the $100 boundary. The row is at least lo and less than hi. Refs #93.`,
+  },
+  '/wiTableTimes100': {
+    kind: `structural`,
+    reason: `100 times the exact tax table amount: 100 times the bracket base plus the excess times 100 times the rate. Refs #93.`,
+  },
+  '/wiTableTax': {
+    kind: `structural`,
+    reason: `half-up guard for the tax table amount. Refs #93.`,
+  },
+  '/wiWsTimes100': {
+    kind: `structural`,
+    reason: `100 times the exact page 44 worksheet tax. Refs #93.`,
+  },
+  '/wiWorksheetTax': {
+    kind: `structural`,
+    reason: `half-up guard for the page 44 worksheet. Refs #93.`,
+  },
 };
 for (const field of [
   `writablePtcAnnualPremium`,
