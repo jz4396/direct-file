@@ -59,6 +59,46 @@ boolean `enabled` fails backend startup and the client's registry loader; there 
   (`current`, `stale`, `structural`, `unverified`), a note and the tracking issue. A `current`
   entry needs a cite like a parameter.
 
+## Re-pin a draft or prior-year source
+
+When a final form or instructions replace a `draft` or `priorYear` source, re-pin that one source
+offline. The helper does not download the file and does not compute the hash. Hash the final
+document locally, then from `df-client/df-client-app` run:
+
+```
+npm run year-config:repin -- --source <key> --url <final url> --sha256 <64 hex characters> --kind final
+```
+
+`yarn year-config:repin` from that directory runs the same script. `--file <path>` reads and writes
+a copy instead of the current year's file from `registry.json`.
+
+The command refuses to run when `--kind` is not `final`, the sha256 is not 64 hex characters, the
+source key is unknown, or the URL is not an `http` or `https` URL whose host is `irs.gov` (or a
+subdomain) or a state revenue domain already used by a source. A username or password in the URL is
+refused. A state revenue domain has a `tax`, `dor`, or `revenue` label, a two-letter prefix plus
+`dor` or `revenue` (`ncdor.gov`, `azdor.gov`, `ksrevenue.gov`), or is `mass.gov` (Massachusetts
+publishes Form 1 instructions there). A subdomain of one of those hosts is allowed. Legislature
+sites, `law.cornell.edu`, `federalregister.gov`, `govinfo.gov`, and the vendor host
+`api.realfile.rtsclients.com` are not state revenue domains, even when a source already uses them.
+A revenue host that is not already in the file (for example a state that has no source yet) is
+refused.
+
+It then:
+
+1. Rewrites that source's `url`, `sha256`, and `kind`. The title and `medium` stay as they are, so
+   a title can still say "draft" after `kind` is `final`.
+2. Prints every parameter, and every `pendingReview` entry, that cites the source. Each cite is one
+   line with the fact, file, page (or page range), and quote. Check those quotes against the final
+   document. The helper does not edit quotes or values.
+3. Removes `provisional` only from a fact that cites this source and whose every cite is now
+   `final`, `statute`, or `revProc`. A fact that still cites a `draft` or `priorYear` source keeps
+   `provisional`.
+
+Keeping that flag after one form cite has become `final` fails `provisionalParameters.test.ts` and
+`Ty2026ProvisionalParametersTest` (the flag is stale) until the remaining interim cites are re-pinned
+or the flag is removed once the quotes have been rechecked. Run the same command again to confirm
+it writes nothing, then `npm run apply-year-config -- --check`.
+
 To change a value: edit the parameter file (value and quote), then run
 `npm run apply-year-config` in `df-client-app` to write it into the XML.
 `npm run apply-year-config -- --check` exits non-zero if the XML and the file disagree.
