@@ -344,7 +344,9 @@ describe(`golden profile save-state round trip`, () => {
   it(`reads federal and state lines from the golden scenario for every profile it builds`, () => {
     const names = Object.keys(goldenProfiles);
     expect(names.length).toBeGreaterThan(0);
-    expect(names).toEqual(expect.arrayContaining([`profileADividendsNiit`, `profileWAzMfjW2`]));
+    expect(names).toEqual(
+      expect.arrayContaining([`profileADividendsNiit`, `profileWAzMfjW2`, `profileYFlMfsPabAmt`])
+    );
     for (const name of names) {
       if (!goldenTestSource.includes(`graph(${name})`)) continue;
       const paths = assertedLinePaths(name);

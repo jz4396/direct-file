@@ -46,6 +46,7 @@ const BACKEND_GOLDEN_U = path.join(SUBMISSION_BLOCKING, `golden-profileU-complet
 const BACKEND_GOLDEN_V = path.join(SUBMISSION_BLOCKING, `golden-profileV-complete.json`);
 const BACKEND_GOLDEN_W = path.join(SUBMISSION_BLOCKING, `golden-profileW-complete.json`);
 const BACKEND_GOLDEN_X = path.join(SUBMISSION_BLOCKING, `golden-profileX-complete.json`);
+const BACKEND_GOLDEN_Y = path.join(SUBMISSION_BLOCKING, `golden-profileY-complete.json`);
 
 /** The operands of /flowIsKnockedOut's Any: [path, negated]. */
 function knockoutOperands(): [string, boolean][] {
@@ -79,6 +80,7 @@ const returns: [string, Record<string, unknown>][] = [
   [`backend golden-profileV-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN_V, `utf-8`)).facts],
   [`backend golden-profileW-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN_W, `utf-8`)).facts],
   [`backend golden-profileX-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN_X, `utf-8`)).facts],
+  [`backend golden-profileY-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN_Y, `utf-8`)).facts],
   ...fs
     .readdirSync(SCENARIOS)
     .filter((f) => f.endsWith(`.json`))
