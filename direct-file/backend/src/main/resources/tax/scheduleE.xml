@@ -4456,13 +4456,13 @@
         2026 draft Instructions for Form 2441 (https://www.irs.gov/pub/irs-dft/i2441--dft.pdf, SHA-256
         7fdecfe193df435542bb452ba108bee011bef7032fda8abe972d6fbd5de233e7), PDF p. 5, lines 4 and 5,
         item 2: "The amount shown on Schedule SE (Form 1040), line 3, minus any deduction you claim
-        on Schedule 1 (Form 1040), line 15." /earnedIncomeWithAllCombatPay (Form 8812 line 18a) and
-        /primaryFilerEarnedIncomeForCdccBase add only scheduleC /scheduleCNetProfitForEarnedIncome, so
-        a K-1 amount is not in those facts. A spouse whose only income is that K-1 is $0 on Form 2441
-        line 5, and the additional child tax credit is understated. Stop when any nonzero box 14 code
-        A reaches Schedule SE (/scheduleEK1Box14CodeANonfarmTotal, either filer, any filing status)
-        and the CDCC or the CTC applies, the same credit conditions as
-        /flowKnockoutScheduleCEarnedIncomeCredits (/cdccQualified or /ctcQualified). A yes to
+        on Schedule 1 (Form 1040), line 15." /earnedIncomeWithAllCombatPay (Form 8812 line 18a) adds
+        scheduleC /scheduleCNetProfitOrLossForEitc, and /primaryFilerEarnedIncomeForCdccBase adds
+        scheduleC /scheduleCNetProfitForEarnedIncome. Neither adds a K-1 amount. A spouse whose only
+        income is that K-1 is $0 on Form 2441 line 5, and the additional child tax credit is understated.
+        Stop when any nonzero box 14 code A reaches Schedule SE (/scheduleEK1Box14CodeANonfarmTotal,
+        either filer, any filing status) and the CDCC or the CTC applies (/cdccQualified or
+        /ctcQualified). A yes to
         qualifying expenses (/writableCdccHasQualifyingExpenses) also stops, because the computed
         credit can be $0 while line 5 ignores the K-1. The EITC stays on /flowKnockoutScheduleEEitc.
         Putting the amount into the earned-income facts is a later slice. Not part of

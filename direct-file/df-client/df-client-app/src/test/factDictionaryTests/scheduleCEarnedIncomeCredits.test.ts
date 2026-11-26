@@ -6,10 +6,12 @@
 // - Rev. Proc. 2025-32 sec. 4.06, p. 15: 2026 earned income amount $13,020 for one qualifying child, credit
 //   percentage 34% (maximum credit 0.34 x 13,020 = 4,426.80, rounded $4,427)
 // - Schedule SE: 92.35% of net profit, 12.4% and 2.9%, half deductible under 26 U.S.C. 164(f)
-// #84: a Schedule C loss reduces childless EITC earned income and no longer stops that return. Rev. Proc. 2025-32
-// p. 15: no qualifying child, earned income amount $8,680, 7.65%, maximum $664; phaseout starts at $10,860 single /
-// $18,140 MFJ and is complete at $19,540 / $26,820. Worksheet B line 4b uses the $50-row midpoint. A loss still stops
-// when the CTC/ACTC or the CDCC applies. Test SSNs are group 00.
+// #84: a Schedule C loss reduces childless EITC earned income and Schedule 8812 line 18a, and no longer stops
+// either return. Rev. Proc. 2025-32: CTC $2,200, ACTC $1,700, refundability threshold $2,500, 15%. No qualifying
+// child: earned income amount $8,680, 7.65%, maximum $664; phaseout starts at $10,860 single / $18,140 MFJ and is
+// complete at $19,540 / $26,820. Worksheet B line 4b uses the $50-row midpoint. 2026 draft Instructions for
+// Schedule 8812, PDF p. 9: if the Earned Income Worksheet line 3 is zero or less, line 18a is -0-. A loss still
+// stops when the CDCC (Form 2441) applies, and a joint return claiming the CDCC still stops. Test SSNs are group 00.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import {
@@ -73,6 +75,30 @@ const withChild = {
   '/familyAndHousehold': createCollectionWrapper([childId]),
   ...makeChildData(childId, `2016-01-01`),
 };
+
+/** Born 2018-01-01: age 8 on December 31, 2026, under 17, so a CTC qualifying child. */
+const childAge8 = {
+  '/familyAndHousehold': createCollectionWrapper([childId]),
+  ...makeChildData(childId, `2018-01-01`),
+};
+
+const hoh = {
+  ...single,
+  '/filingStatus': createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
+  '/scheduleAWantsToItemize': createBooleanWrapper(false),
+  '/receivedImproperClaims': createBooleanWrapper(false),
+  '/writableCdccHasQualifyingExpenses': createBooleanWrapper(false),
+};
+
+const interest = (amount: number) => ({
+  '/interestReports': createCollectionWrapper([interestId]),
+  [`/interestReports/#${interestId}/payer`]: createStringWrapper(`Example Savings Bank`),
+  [`/interestReports/#${interestId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/interestReports/#${interestId}/has1099`]: createBooleanWrapper(true),
+  [`/interestReports/#${interestId}/writable1099Amount`]: createDollarWrapper(`${amount}`),
+  [`/interestReports/#${interestId}/writableInterestOnGovernmentBonds`]: createDollarWrapper(`0`),
+  [`/interestReports/#${interestId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+});
 
 const careFor = (amount: number) => ({
   '/familyAndHousehold': createCollectionWrapper([childId]),
@@ -210,10 +236,10 @@ describe(`Schedule C earned income for the EITC and CDCC (#117)`, () => {
     expect(get(KO).get).toBe(false);
   });
 
-  it(`a Schedule C loss with a CTC qualifying child still stops`, ({ task }) => {
+  it(`a Schedule C loss with a CTC qualifying child no longer stops`, ({ task }) => {
     task.meta.testedFactPaths = [KO, `/ctcQualified`];
-    // Child born 2016-01-01 is under 17 at the end of 2026, so /ctcQualified applies. The loss no longer stops a
-    // childless EITC; it still stops when the CTC applies because ACTC earned income is floored at $0.
+    // Child born 2016-01-01 is under 17 at the end of 2026, so /ctcQualified applies. The loss no longer stops the
+    // CTC/ACTC. Line 18a is -0- because wages are $0 and the signed Schedule C net is -$500.
     const { get, str } = graph({
       ...single,
       ...age30(`8405`),
@@ -223,9 +249,118 @@ describe(`Schedule C earned income for the EITC and CDCC (#117)`, () => {
       ...scheduleC(1000, 1500),
     });
     expect(str(`/scheduleCNetProfitOrLoss`)).toBe(`-500.00`);
+    expect(str(`/scheduleCNetProfitForEarnedIncome`)).toBe(`0.00`);
+    expect(str(`/scheduleCNetProfitOrLossForEitc`)).toBe(`-500.00`);
     expect(get(`/ctcQualified`).get).toBe(true);
+    expect(str(`/pdf8812Line18a`)).toBe(`0.00`);
+    expect(str(`/additionalCtc`)).toBe(`0.00`);
     expect(get(KO).complete).toBe(true);
-    expect(get(KO).get).toBe(true);
+    expect(get(KO).get).toBe(false);
+  });
+
+  it(`HOH, one child age 8, W-2 $12,000 and a $3,000 Schedule C loss: line 18a $9,000 and ACTC $975, no stop`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/pdf8812Line18a`,
+      `/pdf8812Line20`,
+      `/additionalCtc`,
+      `/agi`,
+      `/totalTentativeTax`,
+      KO,
+    ];
+    // No SE tax on a loss. AGI is 12,000 − 3,000 = 9,000, under the $24,150 HOH standard deduction, so tax is $0.
+    // Line 18a is the signed net: 12,000 − 3,000 = 9,000. Line 19 is 9,000 − 2,500 = 6,500. Line 20 is
+    // 15% × 6,500 = 975. One child, tax $0, so the ACTC is that $975. Same as wages of $9,000 and no Schedule C.
+    const loss = graph({
+      ...hoh,
+      ...childAge8,
+      ...makeW2Data(12000, w2Id),
+      ...scheduleC(1000, 4000),
+    });
+    const wagesOnly = graph({
+      ...hoh,
+      ...childAge8,
+      ...makeW2Data(9000, w2Id),
+      '/hadSelfEmploymentIncome': createBooleanWrapper(false),
+    });
+    expect(loss.str(`/scheduleCNetProfitOrLoss`)).toBe(`-3000.00`);
+    expect(loss.str(`/scheduleCNetProfitForEarnedIncome`)).toBe(`0.00`);
+    expect(loss.str(`/scheduleCNetProfitOrLossForEitc`)).toBe(`-3000.00`);
+    expect(loss.str(`/selfEmploymentTax`)).toBe(`0.00`);
+    expect(loss.str(`/agi`)).toBe(`9000.00`);
+    expect(loss.str(`/taxableIncome`)).toBe(`0.00`);
+    expect(loss.str(`/totalTentativeTax`)).toBe(`0.00`);
+    expect(loss.str(`/pdf8812Line18a`)).toBe(`9000.00`);
+    expect(loss.str(`/earnedIncomeAboveActcRefundabilityThreshold`)).toBe(`6500.00`);
+    expect(loss.str(`/pdf8812Line20`)).toBe(`975.00`);
+    expect(loss.str(`/additionalCtc`)).toBe(`975.00`);
+    expect(loss.get(KO).complete).toBe(true);
+    expect(loss.get(KO).get).toBe(false);
+    expect(wagesOnly.str(`/agi`)).toBe(`9000.00`);
+    expect(wagesOnly.str(`/pdf8812Line18a`)).toBe(`9000.00`);
+    expect(wagesOnly.str(`/pdf8812Line20`)).toBe(`975.00`);
+    expect(wagesOnly.str(`/additionalCtc`)).toBe(`975.00`);
+    expect(loss.str(`/additionalCtc`)).toBe(wagesOnly.str(`/additionalCtc`));
+  });
+
+  it(`HOH, one child, W-2 $2,000 and a $3,000 Schedule C loss: line 18a $0 and ACTC $0, no stop`, ({ task }) => {
+    task.meta.testedFactPaths = [`/pdf8812Line18a`, `/additionalCtc`, KO];
+    // 2,000 − 3,000 = −1,000. Earned Income Worksheet line 3 is zero or less, so line 18a is -0- and the ACTC is $0.
+    const { get, str } = graph({
+      ...hoh,
+      ...childAge8,
+      ...makeW2Data(2000, w2Id),
+      ...scheduleC(1000, 4000),
+    });
+    expect(str(`/scheduleCNetProfitOrLoss`)).toBe(`-3000.00`);
+    expect(str(`/scheduleCNetProfitOrLossForEitc`)).toBe(`-3000.00`);
+    expect(str(`/earnedIncomeWithAllCombatPay`)).toBe(`0.00`);
+    expect(str(`/pdf8812Line18a`)).toBe(`0.00`);
+    expect(str(`/additionalCtc`)).toBe(`0.00`);
+    expect(get(KO).complete).toBe(true);
+    expect(get(KO).get).toBe(false);
+  });
+
+  it(`HOH, one child, not taking the EIC: W-2 $20,000, interest $13,000, Schedule C −$8,000 gives ACTC $1,425`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/pdf8812Line18a`,
+      `/pdf8812Line20`,
+      `/additionalCtc`,
+      `/agi`,
+      `/taxableIncome`,
+      `/totalTentativeTax`,
+      `/totalCtc`,
+      `/belowEitcInvestmentIncomeLimit`,
+      KO,
+    ];
+    // Investment income $13,000 is over /belowEitcInvestmentIncomeLimit ($12,200), so the EIC is not taken.
+    // AGI is 20,000 + 13,000 − 8,000 = 25,000. HOH standard deduction $24,150, so taxable income is $850.
+    // Line 18a is 20,000 − 8,000 = 12,000. Line 19 is 9,500. Line 20 is 15% × 9,500 = 1,425.
+    const { get, str } = graph({
+      ...hoh,
+      ...childAge8,
+      ...makeW2Data(20000, w2Id),
+      ...interest(13000),
+      ...scheduleC(1000, 9000),
+    });
+    expect(str(`/scheduleCNetProfitOrLoss`)).toBe(`-8000.00`);
+    expect(str(`/scheduleCNetProfitForEarnedIncome`)).toBe(`0.00`);
+    expect(str(`/scheduleCNetProfitOrLossForEitc`)).toBe(`-8000.00`);
+    expect(get(`/belowEitcInvestmentIncomeLimit`).get).toBe(false);
+    expect(get(`/eitcQualified`).get).toBe(false);
+    expect(str(`/agi`)).toBe(`25000.00`);
+    expect(str(`/taxableIncome`)).toBe(`850.00`);
+    expect(str(`/totalTentativeTax`)).toBe(`86.00`);
+    expect(str(`/totalCtc`)).toBe(`86.00`);
+    expect(str(`/pdf8812Line18a`)).toBe(`12000.00`);
+    expect(str(`/earnedIncomeAboveActcRefundabilityThreshold`)).toBe(`9500.00`);
+    expect(str(`/pdf8812Line20`)).toBe(`1425.00`);
+    expect(str(`/additionalCtc`)).toBe(`1425.00`);
+    expect(get(KO).complete).toBe(true);
+    expect(get(KO).get).toBe(false);
   });
 
   it(`single, age 30, W-2 $15,000 and a $2,000 Schedule C loss: childless EITC matches wages of $13,000`, ({
@@ -259,7 +394,9 @@ describe(`Schedule C earned income for the EITC and CDCC (#117)`, () => {
     expect(loss.str(`/scheduleCNetProfitForEarnedIncome`)).toBe(`0.00`);
     expect(loss.str(`/eitcEarnedIncomeWithoutCombatPay`)).toBe(`13000.00`);
     expect(loss.str(`/agi`)).toBe(`13000.00`);
-    expect(loss.str(`/earnedIncomeWithAllCombatPay`)).toBe(`15000.00`);
+    // Schedule 8812 line 18a uses the same signed net: 15,000 − 2,000 = 13,000. The floored Schedule C
+    // amount used by the CDCC stays $0.
+    expect(loss.str(`/earnedIncomeWithAllCombatPay`)).toBe(`13000.00`);
     expect(loss.get(KO).complete).toBe(true);
     expect(loss.get(KO).get).toBe(false);
     expect(loss.get(`/eitcQualified`).get).toBe(true);
@@ -322,7 +459,7 @@ describe(`Schedule C earned income for the EITC and CDCC (#117)`, () => {
     expect(loss.str(`/earnedIncomeCredit`)).toBe(`664.00`);
   });
 
-  it(`a Schedule C loss with CDCC expenses still stops`, ({ task }) => {
+  it(`a Schedule C loss with Form 2441 CDCC expenses still stops`, ({ task }) => {
     task.meta.testedFactPaths = [`/primaryFilerEarnedIncomeForCdccBase`, `/cdccQualified`, KO];
     // Wages keep the floored CDCC earned income above $0, so the credit applies. The loss is not subtracted there.
     const { get, str } = graph({
