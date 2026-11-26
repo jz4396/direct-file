@@ -9,8 +9,8 @@
     PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
       (PA handling lives in paPit.xml: per-spouse Schedule B lines 1, 5, 6, 10, and 12, /paLine3, and
       /flowKnockoutPaScheduleB).
-  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15
-  and 16 per form. Box 8 (/dividendReports/*/foreignCountry) is the country or U.S. possession for box 7. Box 14
+  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+  14, 15 and 16 per form. Box 8 (/dividendReports/*/foreignCountry) is the country or U.S. possession for box 7. Box 14
   (/dividendReports/*/stateTaxWithheld) is the state tax withheld. Box 15 is the state (/dividendReports/*/state,
   sameState or differentState on /incomeFormStateOptions, the same answer W-2 box 15 uses) and the payer's state
   identification number (/dividendReports/*/stateIdNumber). Box 16 (/dividendReports/*/stateDistribution) is the
@@ -58,10 +58,10 @@
   Box 13 specified private activity bond interest dividends are Form 6251 line 2g
   (form6251 /form6251Line2g). Box 13 cannot exceed box 12.
   Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut, and PrintRefusingKnockouts), never zeroed:
-    boxes 2c, 9 and 10, or box 14 > $0 that is
+    box 2c, or box 14 > $0 that is
       not the supported path below               -> /flowKnockoutDividendUnsupportedBoxes
-    box 16 ≠ box 1a + box 2a on a computed
-      PA, IL, NC, AZ, MA, or ID return           -> /flowKnockoutDividendStateDistribution
+    box 16 ≠ box 1a + box 2a on a state return
+      computed here (/stateReturnComputed)       -> /flowKnockoutDividendStateDistribution
   Box 8 is allowed when /flowKnockoutDividendForeignTaxPaid is false (box 7 is $0 or meets 26 U.S.C. 904(j)). The
   election does not use the country (904(j); Form 1040 instr. (2025) Schedule 3 line 1). A box 7 that fails 904(j)
   stays that stop, including when box 8 is filled in. Boxes 15 and 16 are allowed when box 14 is $0 on every form.
@@ -75,7 +75,8 @@
     box 11 FATCA checked, Form 8938 required     -> income /scheduleBPartIIIOutOfScope
                                                    (interest /flowKnockoutScheduleBPartIII)
     box 13 larger than box 12                    -> /flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12
-    box 3 above the stock's basis                -> /flowKnockoutNondividendDistributionsOverBasis
+    box 3 above the stock's basis, or boxes 3, 9
+      and 10 together above remaining basis      -> /flowKnockoutNondividendDistributionsOverBasis
     box 1b not meeting the holding period        -> /flowKnockoutQualifiedDividendsHoldingPeriod
     box 5 that is not a qualified REIT dividend  -> /flowKnockoutSection199ADividendsHoldingPeriod
     (box 5 that is a qualified REIT dividend is Form 8995 line 6; /flowKnockoutSection199ADividends is no longer a stop)
@@ -89,6 +90,10 @@
     box 2d with a Schedule D line 7 loss or a
       line 14 capital loss carryover              -> scheduleD2 /flowKnockoutCollectibles28RateGainNetting
     nonzero box 6 on a PA-40                     -> paPit /flowKnockoutPaDividendInvestmentExpenses
+  Boxes 9 and 10 are cash and noncash liquidation distributions. When box 9 or box 10 is more than $0, one yes/no
+  asks whether this form's boxes 3, 9, and 10 together exceed remaining basis. No means boxes 9 and 10 are not
+  reported (no Form 1040 line, no Schedule B, no Form 8960 amount). Yes stops because the excess is Form 8949 and
+  basis is not collected. Box 2c stays in the unsupported-box stop.
   Box 2b is unrecaptured section 1250 gain already inside box 2a. Box 2d is collectibles (28%) gain already
   inside box 2a. Boxes 2e and 2f are section 897 amounts already inside box 1a and box 2a. Box 6 is already
   inside box 1a and is not deducted (26 U.S.C. 67(g)). None of them is added to another line.
@@ -473,6 +478,105 @@
             </When>
             <Then>
               <Dependency path="../writableNondividendDistributions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/writableCashLiquidationDistributions">
+      <Name>1099-DIV box 9: cash liquidation distributions (as entered)</Name>
+      <Description>Box 9 on the 1099-DIV. Optional; left blank means $0. Use
+        /dividendReports/*/cashLiquidationDistributions downstream. Not added to a Form 1040 line, Schedule B, or
+        Form 8960.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/cashLiquidationDistributions">
+      <Name>1099-DIV box 9: cash liquidation distributions</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 9 and 10. Show cash and noncash liquidation
+        distributions." This fact is box 9 (cash). Pub. 550 (2025) https://www.irs.gov/pub/irs-pdf/p550.pdf p. 31,
+        Liquidating Distributions: "Any liquidating distribution you receive is not taxable to you until you have
+        recovered the basis of your stock. After the basis of your stock has been reduced to zero, you must report
+        the liquidating distribution as a capital gain." 26 U.S.C. 331(a)
+        (https://www.law.cornell.edu/uscode/text/26/331): "Amounts received by a shareholder in a distribution in
+        complete liquidation of a corporation shall be treated as in full payment in exchange for the stock."
+        26 U.S.C. 301(c)(2) (https://www.law.cornell.edu/uscode/text/26/301). $0 when blank. Not reported on a Form
+        1040 line, Schedule B, or Form 8960 while this form's boxes 3, 9, and 10 together do not exceed remaining
+        basis. Above that basis stops the return (/flowKnockoutNondividendDistributionsOverBasis).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableCashLiquidationDistributions" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableCashLiquidationDistributions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/writableNoncashLiquidationDistributions">
+      <Name>1099-DIV box 10: noncash liquidation distributions (as entered)</Name>
+      <Description>Box 10 on the 1099-DIV. Optional; left blank means $0. Use
+        /dividendReports/*/noncashLiquidationDistributions downstream. Not added to a Form 1040 line, Schedule B, or
+        Form 8960.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/noncashLiquidationDistributions">
+      <Name>1099-DIV box 10: noncash liquidation distributions</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 9 and 10. Show cash and noncash liquidation
+        distributions." This fact is box 10 (noncash). Pub. 550 (2025) https://www.irs.gov/pub/irs-pdf/p550.pdf
+        p. 31, Liquidating Distributions: "Any liquidating distribution you receive is not taxable to you until you
+        have recovered the basis of your stock. After the basis of your stock has been reduced to zero, you must
+        report the liquidating distribution as a capital gain." 26 U.S.C. 331(a)
+        (https://www.law.cornell.edu/uscode/text/26/331). 26 U.S.C. 301(c)(2)
+        (https://www.law.cornell.edu/uscode/text/26/301). $0 when blank. Not reported on a Form 1040 line, Schedule
+        B, or Form 8960 while this form's boxes 3, 9, and 10 together do not exceed remaining basis. Above that
+        basis stops the return (/flowKnockoutNondividendDistributionsOverBasis).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableNoncashLiquidationDistributions" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableNoncashLiquidationDistributions" />
             </Then>
           </Case>
           <Case>
@@ -916,11 +1020,10 @@
       <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
         https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
         This fact is the state distribution. It is payer state-income information, used only for a state return, and
-        is not added to any line. $0 when blank. Allowed when box 14 is $0 on every form. On a computed state return
-        (stateReturn /stateReturnComputed: Pennsylvania, including a part-year PA-40, Illinois, North Carolina,
-        Arizona, Massachusetts, or Idaho) an entered amount that is not this form's box 1a plus box 2a stops the
-        return (/flowKnockoutDividendStateDistribution). Those modules read the federal amounts. A blank box 16 is
-        not an amount and does not stop.</Description>
+        is not added to any line. $0 when blank. Allowed when box 14 is $0 on every form. On a state return computed
+        here (`/stateReturnComputed`) an entered amount that is not this form's box 1a plus box 2a stops the return
+        (/flowKnockoutDividendStateDistribution). That state return reads the federal amounts. A blank box 16 is not
+        an amount and does not stop.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -1240,8 +1343,8 @@
 
     <Fact path="/dividendReports/*/hasUnsupportedBoxes">
       <Name>1099-DIV has an amount in an unsupported box</Name>
-      <Description>Yes if the form has an amount in box 2c, 9, or 10. Box 14 greater than $0 stops only when
-        /dividendReports/*/stateTaxWithheldUnsupported is true, not from this answer. Box 8
+      <Description>Yes if the form has an amount in box 2c. Boxes 9 and 10 are not this answer. Box 14 greater than $0
+        stops only when /dividendReports/*/stateTaxWithheldUnsupported is true, not from this answer. Box 8
         (/dividendReports/*/foreignCountry) is not this answer: it is allowed when
         /flowKnockoutDividendForeignTaxPaid is false. Boxes 15 and 16
         (/dividendReports/*/stateIdNumber and /dividendReports/*/stateDistribution) are not this answer when box 14
@@ -1250,14 +1353,17 @@
         collectibles (28%) gain (/dividendReports/*/collectibles28RateGain). Box 2e is section 897 ordinary dividends
         (/dividendReports/*/section897OrdinaryDividends), box 2f is section 897 capital gain
         (/dividendReports/*/section897CapitalGain), and box 6 is investment expenses
-        (/dividendReports/*/investmentExpenses). Box 12 is exempt-interest dividends
+        (/dividendReports/*/investmentExpenses). Box 9 is cash liquidation distributions
+        (/dividendReports/*/cashLiquidationDistributions) and box 10 is noncash liquidation distributions
+        (/dividendReports/*/noncashLiquidationDistributions). Box 12 is exempt-interest dividends
         (/dividendReports/*/exemptInterestDividends) and box 13 is specified private activity bond interest dividends
         (/dividendReports/*/specifiedPrivateActivityBondInterestDividends). None of those is one of these boxes. Form
         1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
         https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
-        Box 2c "Section 1202 gain" (still this stop), boxes 9-10 liquidation distributions (still this stop). Box 14
-        state tax withheld stops when /dividendReports/*/stateTaxWithheldUnsupported is true.
-        Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
+        Box 2c "Section 1202 gain" is still this stop. Boxes 9 and 10 at or below remaining basis are not this stop
+        and are not income. Above remaining basis, together with box 3, they stop at
+        /flowKnockoutNondividendDistributionsOverBasis. Box 14 state tax withheld stops when
+        /dividendReports/*/stateTaxWithheldUnsupported is true. Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -1736,6 +1842,25 @@
       </Writable>
     </Fact>
 
+    <Fact path="/dividendReports/*/liquidationDistributionsExceedBasis">
+      <Name>Boxes 3, 9, and 10 together exceed remaining basis</Name>
+      <Description>Asked when box 9 or box 10 is more than $0. One yes/no, as box 3 does: do this form's boxes 3, 9,
+        and 10 together exceed the remaining basis in that stock? Form 1099-DIV (Rev. December 2027) draft,
+        Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 9 and 10. Show cash and
+        noncash liquidation distributions." Pub. 550 (2025) https://www.irs.gov/pub/irs-pdf/p550.pdf p. 31,
+        Liquidating Distributions: "Any liquidating distribution you receive is not taxable to you until you have
+        recovered the basis of your stock. After the basis of your stock has been reduced to zero, you must report
+        the liquidating distribution as a capital gain." 26 U.S.C. 331(a)
+        (https://www.law.cornell.edu/uscode/text/26/331). Box 3 is basis recovery under 26 U.S.C. 301(c)(2)
+        (https://www.law.cornell.edu/uscode/text/26/301). No means boxes 9 and 10 are not reported (no Form 1040 line,
+        no Schedule B, no Form 8960 amount). Yes stops the return
+        (/flowKnockoutNondividendDistributionsOverBasis) because the excess goes on Form 8949 and basis is not
+        collected.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
     <Fact path="/dividendReports/*/section199ADividendsHoldingPeriodMet">
       <Name>Box 5 dividends are qualified REIT dividends</Name>
       <Description>Asked when box 5 is more than $0. Yes means each REIT share was held for more than 45 days during
@@ -1812,6 +1937,32 @@
             <Dollar>0</Dollar>
           </Right>
         </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/hasLiquidationDistributions">
+      <Name>Box 9 or box 10 is more than $0</Name>
+      <Description>1099-DIV box 9 or box 10 is more than $0, so one yes/no asks whether this form's boxes 3, 9, and
+        10 together exceed remaining basis. Complete false when both boxes are blank or $0.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <Dependency path="../cashLiquidationDistributions" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency path="../noncashLiquidationDistributions" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </Any>
       </Derived>
     </Fact>
 
@@ -1991,6 +2142,14 @@
             </Not>
             <IsComplete>
               <Dependency path="../nondividendDistributionsExceedBasis" />
+            </IsComplete>
+          </Any>
+          <Any>
+            <Not>
+              <Dependency path="../hasLiquidationDistributions" />
+            </Not>
+            <IsComplete>
+              <Dependency path="../liquidationDistributionsExceedBasis" />
             </IsComplete>
           </Any>
           <Any>
@@ -2552,13 +2711,15 @@
 
     <Fact path="/flowKnockoutDividendUnsupportedBoxes">
       <Name>Knockout: 1099-DIV box this tool can't compute</Name>
-      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes (box 2c, 9, or 10), or box 14 greater than $0 that
+      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes (box 2c), or box 14 greater than $0 that
         fails /dividendReports/*/stateTaxWithheldIsSupported
         (/dividendReports/*/stateTaxWithheldUnsupported). Box 2c needs the section 1202 part of the 28% Rate Gain
         Worksheet (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1
         requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section
         1202 gain), or box 2d (collectibles (28%) gain)"). Boxes 2b and 2d are supported and are not this stop.
-        Boxes 9-10 are liquidation distributions (basis recovery). Box 14 is state tax withheld. Form 1099-DIV
+        Boxes 9 and 10 are liquidation distributions. At or below remaining basis they are not this stop and are not
+        income. Above remaining basis, together with box 3, they stop at
+        /flowKnockoutNondividendDistributionsOverBasis. Box 14 is state tax withheld. Form 1099-DIV
         (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf:
         "Boxes 14–16. State income tax withheld reporting boxes." It is not added to Schedule A line 5a. Instructions
         for Schedule A (Form 1040) (2025) draft, https://www.irs.gov/pub/irs-dft/i1040sca--dft.pdf, Line 5a, includes
@@ -2568,8 +2729,8 @@
         state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho), a no-income-tax
         resident, or a different box 15 state stops. $0 does not. Box 8 is a foreign country
         (/dividendReports/*/foreignCountry) and is not this stop. Boxes 15 and 16 are not this stop when box 14 is
-        $0. A box 16 amount that differs from box 1a plus box 2a on a computed state return stops at
-        /flowKnockoutDividendStateDistribution. The 1099-INT box 17 stop is not this stop. Box 11 (FATCA filing
+        $0. A box 16 amount that differs from box 1a plus box 2a on a state return computed here
+        (`/stateReturnComputed`) stops at /flowKnockoutDividendStateDistribution. The 1099-INT box 17 stop is not this stop. Box 11 (FATCA filing
         requirement) is not this stop. Form
         1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
         https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: the payer is reporting to satisfy its chapter 4
@@ -2637,19 +2798,17 @@
     </Fact>
 
     <Fact path="/flowKnockoutDividendStateDistribution">
-      <Name>Knockout: 1099-DIV box 16 differs from box 1a plus box 2a on a computed state return</Name>
-      <Description>A computed state return (stateReturn /stateReturnComputed: full-year or part-year Pennsylvania,
-        Illinois, North Carolina, Arizona, Massachusetts, or Idaho) and an entered box 16 that is not that form's
-        box 1a plus box 2a. Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+      <Name>Knockout: 1099-DIV box 16 differs from box 1a plus box 2a on a state return computed here</Name>
+      <Description>A state return computed here (`/stateReturnComputed`) and an entered box 16 that is not that
+        form's box 1a plus box 2a. Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
         https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
-        This stop is the state distribution. PA-40 Schedule B reads federal box 1a (line 1) and box 2a (line 10).
-        Illinois, North Carolina, Arizona, Massachusetts, and Idaho read federal total income, which includes those
-        amounts. A different state distribution is not computed, so the return stops. Blank box 16 is not an amount.
-        An amount equal to box 1a plus box 2a does not stop. A return that is not a computed state return, including
-        Florida, is complete false. Box 14 greater than $0 that is not the supported path is
-        /flowKnockoutDividendUnsupportedBoxes, not this stop. Complete false when /stateReturnComputed is not a
-        complete true, when no Form 1099-DIV is entered, or when every entered box 16 equals that form's box 1a plus
-        box 2a.</Description>
+        This stop is the state distribution. A state return computed here (`/stateReturnComputed`) reads the federal
+        amounts, which include box 1a and box 2a. A different state distribution is not computed, so the return
+        stops. Blank box 16 is not an amount. An amount equal to box 1a plus box 2a does not stop. A return that is
+        not a state return computed here (`/stateReturnComputed`), including Florida, is complete false. Box 14
+        greater than $0 that is not the supported path is /flowKnockoutDividendUnsupportedBoxes, not this stop.
+        Complete false when /stateReturnComputed is not a complete true, when no Form 1099-DIV is entered, or when
+        every entered box 16 equals that form's box 1a plus box 2a.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2724,11 +2883,20 @@
     </Fact>
 
     <Fact path="/flowKnockoutNondividendDistributionsOverBasis">
-      <Name>Knockout: 1099-DIV box 3 above basis</Name>
-      <Description>Yes to /dividendReports/*/nondividendDistributionsExceedBasis. The excess is capital gain (26 U.S.C.
+      <Name>Knockout: 1099-DIV distributions above remaining basis</Name>
+      <Description>Yes to /dividendReports/*/nondividendDistributionsExceedBasis, or yes to
+        /dividendReports/*/liquidationDistributionsExceedBasis. Box 3 above basis is capital gain (26 U.S.C.
         301(c)(3)(A), https://www.law.cornell.edu/uscode/text/26/301) reported on Form 8949 (Form 1040 instr. (2025)
-        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Nondividend Distributions); stock basis is not collected
-        here. At or below basis box 3 is not income (301(c)(2)).</Description>
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Nondividend Distributions). Boxes 9 and 10 are cash and
+        noncash liquidation distributions (Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 9 and 10. Show cash and noncash liquidation
+        distributions."). Pub. 550 (2025) https://www.irs.gov/pub/irs-pdf/p550.pdf p. 31, Liquidating Distributions:
+        "Any liquidating distribution you receive is not taxable to you until you have recovered the basis of your
+        stock. After the basis of your stock has been reduced to zero, you must report the liquidating distribution
+        as a capital gain." 26 U.S.C. 331(a) (https://www.law.cornell.edu/uscode/text/26/331). Asked when box 9 or
+        box 10 is more than $0: do this form's boxes 3, 9, and 10 together exceed remaining basis? The excess goes
+        on Form 8949. Basis is not collected, so yes stops the return. No means boxes 9 and 10 are not reported: no
+        Form 1040 line, no Schedule B, and no Form 8960 amount. At or below basis box 3 is not income (301(c)(2)).</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2741,21 +2909,38 @@
               </IsComplete>
             </When>
             <Then>
-              <GreaterThan>
-                <Left>
-                  <Count>
-                    <All>
-                      <IsComplete>
+              <Any>
+                <GreaterThan>
+                  <Left>
+                    <Count>
+                      <All>
+                        <IsComplete>
+                          <Dependency path="/dividendReports/*/nondividendDistributionsExceedBasis" />
+                        </IsComplete>
                         <Dependency path="/dividendReports/*/nondividendDistributionsExceedBasis" />
-                      </IsComplete>
-                      <Dependency path="/dividendReports/*/nondividendDistributionsExceedBasis" />
-                    </All>
-                  </Count>
-                </Left>
-                <Right>
-                  <Int>0</Int>
-                </Right>
-              </GreaterThan>
+                      </All>
+                    </Count>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <GreaterThan>
+                  <Left>
+                    <Count>
+                      <All>
+                        <IsComplete>
+                          <Dependency path="/dividendReports/*/liquidationDistributionsExceedBasis" />
+                        </IsComplete>
+                        <Dependency path="/dividendReports/*/liquidationDistributionsExceedBasis" />
+                      </All>
+                    </Count>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+              </Any>
             </Then>
           </Case>
           <Case>

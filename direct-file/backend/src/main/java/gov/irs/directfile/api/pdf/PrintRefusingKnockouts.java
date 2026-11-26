@@ -461,8 +461,10 @@ public final class PrintRefusingKnockouts {
             // Rev. Proc. 2025-32 §4.10 complete phaseout amount for a married individual filing a separate return
             // (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 17). Printing line 4 without it understates AMTI.
             "/flowKnockoutAmtMfsAddBack",
-            // Form 1099-DIV boxes this return does not compute (2c, 9, 10, and box 14 greater than $0 that is not the
+            // Form 1099-DIV boxes this return does not compute (2c, and box 14 greater than $0 that is not the
             // supported path: no computed state return, an income-tax resident state, and box 15 the resident state).
+            // Boxes 9 and 10 at or below remaining basis are not income and are not this stop. Above remaining
+            // basis they are /flowKnockoutNondividendDistributionsOverBasis.
             // Box 8 is the foreign country and is not this stop when box 7 is $0 or meets 26 U.S.C. 904(j). Boxes 15
             // and 16 are not this stop when box 14 is $0. Box 2b is unrecaptured section
             // 1250 gain already inside box 2a and is Schedule D line 19. Box 2d is collectibles (28%) gain already
@@ -477,14 +479,17 @@ public final class PrintRefusingKnockouts {
             // or box 2d makes Schedule D required. 26 U.S.C. 1(h)(4), 1(h)(5), 1(h)(6), 1(h)(7). Printing only box
             // 2a would drop box 2c.
             "/flowKnockoutDividendUnsupportedBoxes",
-            // Box 16 entered on a computed state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho)
-            // and not equal to that form's box 1a plus box 2a. Those returns read the federal amounts. A blank box 16,
-            // an equal amount, and a return that is not a computed state return (including Florida) still print.
+            // Box 16 entered on a state return computed here (`/stateReturnComputed`)
+            // and not equal to that form's box 1a plus box 2a. That state return reads the federal amounts. A blank
+            // box 16, an equal amount, and a return that is not a state return computed here (`/stateReturnComputed`)
+            // (including Florida) still print.
             // Box 14 greater than $0 on the unsupported path is /flowKnockoutDividendUnsupportedBoxes.
             "/flowKnockoutDividendStateDistribution",
-            // Box 3 above basis is capital gain. 26 U.S.C. 301(c)(3)(A). Form 1040 instr. (2025) p. 26, Nondividend
-            // Distributions: "After you get back all of your cost (or other basis), you must report these
-            // distributions as capital gains on Form 8949." Basis is not collected, so the gain is not zeroed.
+            // Box 3 above basis, or boxes 3, 9, and 10 together above remaining basis, is capital gain.
+            // 26 U.S.C. 301(c)(3)(A); 331(a). Form 1040 instr. (2025) p. 26, Nondividend Distributions: "After you
+            // get back all of your cost (or other basis), you must report these distributions as capital gains on
+            // Form 8949." Pub. 550 (2025) p. 31: a liquidating distribution is not taxable until basis is recovered.
+            // Basis is not collected, so the gain is not zeroed. At or below basis, boxes 9 and 10 are not reported.
             "/flowKnockoutNondividendDistributionsOverBasis",
             // Box 1b that fails the holding period is not a qualified dividend. Form 1040 instr. (2025) p. 26, Line
             // 3a, Exception. 26 U.S.C. 1(h)(11)(B)(iii). Line 3a is not reduced by a split this return does not
