@@ -40,6 +40,7 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static gov.irs.directfile.api.pdf.Schedules123Ty2026PdfSmokeTest.standardDeduction;
 import static gov.irs.directfile.api.pdf.Ty2026PdfPackageTest.checked;
 import static gov.irs.directfile.api.pdf.Ty2026PdfPackageTest.syntheticFiler;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -547,8 +548,8 @@ class ScheduleBAndETy2026PdfSmokeTest {
      * <p>Golden values, whole dollars. Part I net $8,500. Box 1: $100 + $200 + $300 + $400 + $500 + $600 = $2,100 on
      * lines 29a, 30, and 32. Box 6: $1,000 + $2,000 + $3,000 = $6,000 on lines 34a, 35, and 37. Line 41 and Schedule 1
      * line 5 are $8,500 + $2,100 + $6,000 = $16,600. A filled line 28 and line 33 (four K-1s and two estates) has no
-     * continuation page, so this package is one page longer. Twenty-one K-1s and eleven estates still stop. A loss on
-     * row E still stops, and that stop is not the row cap.
+     * continuation page, so this package is one page longer. A loss on row E still stops, and that stop is not the
+     * row cap.
      */
     @Test
     void scheduleEContinuationSheetPrintsSixK1sAndThreeEstates() throws Exception {
@@ -612,15 +613,49 @@ class ScheduleBAndETy2026PdfSmokeTest {
             amount(s1, "f1_09[0]", 16600, "Schedule 1 line 5 = line 41");
         }
 
-        refuses(partnershipsAndEstates(21, 0), SCHEDULE_E_PART_II_MORE_THAN_TWENTY_KNOCKOUT);
-        refuses(partnershipsAndEstates(0, 11), SCHEDULE_E_PART_III_MORE_THAN_TEN_KNOCKOUT);
-
         Map<String, String> lossOnRowE = partnershipsAndEstates(5, 0);
         lossOnRowE.put("/scheduleEK1s/#e1000000-0000-4000-8000-000000000005/box1", dollar("-1.00"));
         // The per-row loss is /flowKnockoutScheduleEPartIILoss (Count of every /scheduleEK1s/*/isLoss).
         // Print refusal reports the umbrella /flowKnockoutScheduleEPartII, which includes that loss. The row cap
         // is a different path and is not the reason this return stops.
         refuses(lossOnRowE, SCHEDULE_E_PART_II_KNOCKOUT);
+    }
+
+    /**
+     * Twenty partnerships and ten estates are the printed caps. Rows E-T and C-J are the continuation. Row T is
+     * Partner 20 and row J is Trust 10. 2026 draft Instructions for Schedule E, PDF p. 10.
+     */
+    @Test
+    void scheduleEContinuationSheetPrintsTwentyK1sAndTenEstatesOnOnePage() throws Exception {
+        byte[] pdf = assertDoesNotThrow(
+                () -> generate(partnershipsAndEstates(20, 10)),
+                "Schedule E continuation does not fit on one page");
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            assertEquals(1, continuationPages(doc), "the cap shares one continuation page");
+            String cont = continuationText(doc);
+            assertTrue(continuationLineContains(cont, "Partner 20", "T"), cont);
+            assertTrue(continuationLineContains(cont, "Trust 10", "J"), cont);
+        }
+    }
+
+    /** Twenty-one partnerships stop. Eleven estates and no partnership stop on the Part III cap. */
+    @Test
+    void scheduleERefusesTwentyOnePartnerships() throws Exception {
+        refuses(partnershipsAndEstates(21, 0), SCHEDULE_E_PART_II_MORE_THAN_TWENTY_KNOCKOUT);
+    }
+
+    @Test
+    void scheduleERefusesElevenEstates() throws Exception {
+        refuses(partnershipsAndEstates(0, 11), SCHEDULE_E_PART_III_MORE_THAN_TEN_KNOCKOUT);
+    }
+
+    static boolean continuationLineContains(String text, String name, String letter) {
+        for (String line : text.split("\\R")) {
+            if (line.contains(name) && line.contains(letter)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static int continuationPages(PDDocument doc) throws Exception {
